@@ -1,8 +1,8 @@
-import { type PurchaseOrder, type Distribution, type Invoice, type Coordinator, InvoiceStatus, DistributionStatus, POStatus } from '../types';
-import { TruckIcon, DocumentTextIcon, ArchiveIcon } from './icons/Icons';
+import { InvoiceStatus, DistributionStatus, POStatus } from '../constants.js';
+import { TruckIcon, DocumentTextIcon, ArchiveIcon } from './icons/Icons.jsx';
 
 // A reusable card component for displaying statistics.
-const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; subtext?: string }> = ({ title, value, icon, subtext }) => (
+const StatCard = ({ title, value, icon, subtext }) => (
     <div className="bg-surface rounded-xl shadow-md p-6 flex items-center border-l-4 border-primary">
         <div className="bg-primary-light p-3 rounded-full mr-4">
             {icon}
@@ -16,7 +16,7 @@ const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; 
 );
 
 // A reusable component for listing recent activities.
-const RecentActivityList: React.FC<{ title: string; items: any[]; renderItem: (item: any) => React.ReactNode }> = ({ title, items, renderItem }) => (
+const RecentActivityList = ({ title, items, renderItem }) => (
     <div className="bg-surface rounded-xl shadow-md p-6">
         <h3 className="text-lg font-bold text-primary-dark mb-4">{title}</h3>
         <ul className="space-y-3">
@@ -25,23 +25,15 @@ const RecentActivityList: React.FC<{ title: string; items: any[]; renderItem: (i
     </div>
 );
 
-// Props for the Dashboard component, as provided in App.tsx
-interface DashboardProps {
-    purchaseOrders: PurchaseOrder[];
-    distributions: Distribution[];
-    invoices: Invoice[];
-    availableStock: number;
-    coordinators: Coordinator[];
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ purchaseOrders, distributions, invoices, availableStock, coordinators }) => {
+// Props for the Dashboard component, as provided in App.jsx
+const Dashboard = ({ purchaseOrders, distributions, invoices, availableStock, coordinators }) => {
     // Calculate key statistics for the dashboard cards.
     const pendingDistributions = distributions.filter(d => d.status !== DistributionStatus.DELIVERED).length;
     const unpaidInvoices = invoices.filter(i => i.status === InvoiceStatus.UNPAID);
     const unpaidInvoicesCount = unpaidInvoices.length;
     const unpaidAmount = unpaidInvoices.reduce((sum, inv) => sum + inv.amount, 0);
 
-    const getCoordinatorName = (id: string) => coordinators.find(c => c.id === id)?.name || 'N/A';
+    const getCoordinatorName = (id) => coordinators.find(c => c.id === id)?.name || 'N/A';
 
     return (
         <div>
@@ -74,7 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ purchaseOrders, distributions, in
                 <RecentActivityList 
                     title="Purchase Orders Terbaru"
                     items={purchaseOrders}
-                    renderItem={(po: PurchaseOrder) => (
+                    renderItem={(po) => (
                         <li key={po.id} className="flex justify-between items-center text-sm p-2 rounded-md hover:bg-gray-50 transition-colors">
                             <div>
                                 <p className="font-medium text-primary-dark">{po.poNumber}</p>
@@ -93,7 +85,7 @@ const Dashboard: React.FC<DashboardProps> = ({ purchaseOrders, distributions, in
                 <RecentActivityList 
                     title="Distribusi Terbaru"
                     items={distributions}
-                    renderItem={(dist: Distribution) => (
+                    renderItem={(dist) => (
                         <li key={dist.id} className="flex justify-between items-center text-sm p-2 rounded-md hover:bg-gray-50 transition-colors">
                             <div>
                                 <p className="font-medium text-primary-dark">{dist.suratJalanNumber}</p>

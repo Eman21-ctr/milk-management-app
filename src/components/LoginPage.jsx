@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { auth } from '../firebase'; // Correctly imports only what's needed
+import { auth } from '../firebase.js'; // Correctly imports only what's needed
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleAuthAction = async (e: React.FormEvent) => {
+  const handleAuthAction = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       setError("Email dan password harus diisi.");
@@ -23,8 +23,8 @@ const LoginPage: React.FC = () => {
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
-      // Listener di App.tsx akan menangani sisanya
-    } catch (err: any) {
+      // Listener di App.jsx akan menangani sisanya
+    } catch (err) {
       switch (err.code) {
         case 'auth/user-not-found':
           setError('Email tidak terdaftar. Silakan registrasi terlebih dahulu.');
@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
             />
           </div>
           <div>
-            <label htmlFor="password"className="block text-sm font-medium text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               id="password"

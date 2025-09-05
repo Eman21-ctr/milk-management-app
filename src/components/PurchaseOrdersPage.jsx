@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { POStatus } from '../types';
-import { MINIMUM_ORDER_CARTONS, PRICE_PER_BATCH, SUPPLIER_NAME } from '../constants';
-import Modal from './Modal';
-import { PlusIcon, InfoIcon, SwitchHorizontalIcon } from './icons/Icons';
+import { POStatus, MINIMUM_ORDER_CARTONS, PRICE_PER_BATCH, SUPPLIER_NAME } from '../constants.js';
+import Modal from './Modal.jsx';
+import { PlusIcon, InfoIcon, SwitchHorizontalIcon } from './icons/Icons.jsx';
 
 const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
-    // FIX: Typed the allocations state to ensure values are numbers, resolving reduce operation errors.
-    const [allocations, setAllocations] = useState<{ [key: string]: number }>({});
+    // Fixed: Initialize allocations as empty object with number values
+    const [allocations, setAllocations] = useState({});
 
     useEffect(() => {
         if (isOpen) {
@@ -20,11 +19,11 @@ const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
     };
 
     const totalAllocated = Object.values(allocations).reduce((sum, val) => sum + val, 0);
-    // FIX: Cast po.remainingCartons to a number to prevent type errors in arithmetic operations.
+    // Fixed: Cast po.remainingCartons to number to prevent type errors
     const remainingToAllocate = Number(po.remainingCartons) - totalAllocated;
 
     const handleSave = () => {
-        // FIX: Cast po.remainingCartons to a number to prevent type errors in comparison.
+        // Fixed: Cast po.remainingCartons to number to prevent type errors
         if (totalAllocated > Number(po.remainingCartons)) {
             alert('Jumlah alokasi melebihi sisa stok PO.');
             return;
@@ -68,7 +67,6 @@ const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
     );
 };
 
-
 const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOrderStatus, coordinators, allocationHistory, allocateStockFromPO }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -79,8 +77,8 @@ const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOr
   const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
   const [totalCartons, setTotalCartons] = useState(batches * MINIMUM_ORDER_CARTONS);
   const [totalPrice, setTotalPrice] = useState(batches * PRICE_PER_BATCH);
-  // FIX: Widened the type of status to string to allow updates from the select input.
-  const [status, setStatus] = useState<string>(POStatus.SENT);
+  // Fixed: Initialize status as string (removed TypeScript typing)
+  const [status, setStatus] = useState(POStatus.SENT);
 
   useEffect(() => {
     setTotalCartons(batches * MINIMUM_ORDER_CARTONS);

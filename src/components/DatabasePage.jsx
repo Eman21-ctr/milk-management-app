@@ -1,14 +1,8 @@
 import { useState } from 'react';
-import { type PurchaseOrder, type Distribution, type Invoice, type SPPG, type Coordinator, InvoiceStatus } from '../types';
-import { DownloadIcon, DatabaseIcon as PageIcon } from './icons/Icons';
+import { InvoiceStatus } from '../constants.js';
+import { DownloadIcon, DatabaseIcon as PageIcon } from './icons/Icons.jsx';
 
-interface DataCardProps {
-    title: string;
-    onDownloadExcel: () => void;
-    onDownloadPdf: () => void;
-}
-
-const DataCard: React.FC<DataCardProps> = ({ title, onDownloadExcel, onDownloadPdf }) => (
+const DataCard = ({ title, onDownloadExcel, onDownloadPdf }) => (
     <div className="bg-surface rounded-xl shadow-md p-6 border-l-4 border-primary">
         <div className="flex items-center mb-4">
             <PageIcon className="h-8 w-8 text-primary-light mr-4" />
@@ -27,15 +21,11 @@ const DataCard: React.FC<DataCardProps> = ({ title, onDownloadExcel, onDownloadP
     </div>
 );
 
-interface FinancialReportCardProps {
-    onDownload: (type: 'csv' | 'pdf', startDate: string, endDate: string) => void;
-}
-
-const FinancialReportCard: React.FC<FinancialReportCardProps> = ({ onDownload }) => {
+const FinancialReportCard = ({ onDownload }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
 
-    const handleDownload = (type: 'csv' | 'pdf') => {
+    const handleDownload = (type) => {
         if (!startDate || !endDate) {
             alert('Silakan pilih periode tanggal mulai dan selesai.');
             return;
@@ -89,24 +79,11 @@ const FinancialReportCard: React.FC<FinancialReportCardProps> = ({ onDownload })
     );
 };
 
-interface DatabasePageProps {
-    purchaseOrders: PurchaseOrder[];
-    distributions: Distribution[];
-    invoices: Invoice[];
-    sppgs: SPPG[];
-    coordinators: Coordinator[];
-}
-
-interface CsvHeader {
-    key: string;
-    label: string;
-}
-
-const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributions, invoices, sppgs, coordinators }) => {
+const DatabasePage = ({ purchaseOrders, distributions, invoices, sppgs, coordinators }) => {
     
-    const getSppgName = (sppgId: string) => sppgs.find(s => s.id === sppgId)?.name || 'N/A';
+    const getSppgName = (sppgId) => sppgs.find(s => s.id === sppgId)?.name || 'N/A';
 
-    const convertToCSV = (data: any[], headers: CsvHeader[]) => {
+    const convertToCSV = (data, headers) => {
         const headerRow = headers.map(h => h.label).join(',');
         const dataRows = data.map(row => {
             return headers.map(header => {
@@ -117,7 +94,7 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
         return [headerRow, ...dataRows].join('\n');
     };
 
-    const downloadCSV = (csvString: string, filename: string) => {
+    const downloadCSV = (csvString, filename) => {
         const blob = new Blob([`\uFEFF${csvString}`], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
@@ -129,15 +106,15 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
         document.body.removeChild(link);
     };
 
-    const downloadGenericPDF = (data: any[], headers: CsvHeader[], title: string, filename: string) => {
-        const { jsPDF } = (window as any).jspdf;
+    const downloadGenericPDF = (data, headers, title, filename) => {
+        const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
         const margin = 14;
         let pageCount = 1;
 
-        const addHeader = (pageTitle: string) => {
+        const addHeader = (pageTitle) => {
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(14);
             doc.text('KDMP Penfui Timur', margin, 18);
@@ -151,7 +128,7 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
             doc.text(pageTitle, pageWidth / 2, 38, { align: 'center' });
         };
     
-        const addFooter = (pageNumber: number) => {
+        const addFooter = (pageNumber) => {
             doc.setFontSize(8);
             doc.text(`Halaman ${pageNumber}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
         };
@@ -220,7 +197,7 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
         doc.save(filename);
     };
 
-    const handleDownload = (type: 'csv' | 'pdf', dataType: string, startDate?: string, endDate?: string) => {
+    const handleDownload = (type, dataType, startDate, endDate) => {
         if (dataType === 'finance') {
              if (!startDate || !endDate) {
                 alert("Periode tanggal harus diisi untuk laporan keuangan.");
@@ -263,14 +240,14 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
                 downloadCSV(csvContent, 'laporan-keuangan.csv');
 
             } else { // PDF
-                const { jsPDF } = (window as any).jspdf;
+                const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
                 const margin = 14;
                 let pageCount = 1;
 
-                const addHeader = (pageTitle: string) => {
+                const addHeader = (pageTitle) => {
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.text('KDMP Penfui Timur', margin, 18);
@@ -284,7 +261,7 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
                     doc.text(pageTitle, pageWidth / 2, 38, { align: 'center' });
                 };
             
-                const addFooter = (pageNumber: number) => {
+                const addFooter = (pageNumber) => {
                     doc.setFontSize(8);
                     doc.text(`Halaman ${pageNumber}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
                 };
@@ -322,7 +299,7 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
                 doc.setTextColor(0, 0, 0);
                 y += 15;
 
-                const drawTable = (title: string, headers: {key: string, label: string, width: number}[], data: any[], startY: number) => {
+                const drawTable = (title, headers, data, startY) => {
                     let tableY = startY;
                     const headerHeight = 9;
                     const tableBottom = pageHeight - 20;
@@ -415,7 +392,6 @@ const DatabasePage: React.FC<DatabasePageProps> = ({ purchaseOrders, distributio
             }
             return;
         }
-
 
         let data, headers, title, filename;
 

@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { type Invoice, type Distribution, type SPPG, type Coordinator } from '../types';
 import { DownloadIcon } from './icons/Icons';
-import { SELLING_PRICE_PER_CARTON, BOTTLES_PER_CARTON } from '../constants';
+import { SELLING_PRICE_PER_CARTON, BOTTLES_PER_CARTON } from '../constants.js';
 
 // Helper function to convert number to Indonesian words
-const numberToWords = (num: number): string => {
+const numberToWords = (num) => {
     const ones = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan'];
     const teens = ['sepuluh', 'sebelas', 'dua belas', 'tiga belas', 'empat belas', 'lima belas', 'enam belas', 'tujuh belas', 'delapan belas', 'sembilan belas'];
     const tens = ['', '', 'dua puluh', 'tiga puluh', 'empat puluh', 'lima puluh', 'enam puluh', 'tujuh puluh', 'delapan puluh', 'sembilan puluh'];
@@ -12,7 +11,7 @@ const numberToWords = (num: number): string => {
 
     if (num === 0) return 'Nol';
 
-    const convertLessThanThousand = (n: number): string => {
+    const convertLessThanThousand = (n) => {
         if (n === 0) return '';
         if (n < 10) return ones[n];
         if (n < 20) return teens[n - 10];
@@ -49,16 +48,7 @@ const numberToWords = (num: number): string => {
     return finalResult.charAt(0).toUpperCase() + finalResult.slice(1);
 };
 
-interface PrintableInvoiceProps {
-    isOpen: boolean;
-    onClose: () => void;
-    invoice?: Invoice;
-    distribution?: Distribution;
-    sppg?: SPPG;
-    coordinator?: Coordinator;
-}
-
-const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ isOpen, onClose, invoice, distribution, sppg }) => {
+const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   
   if (!isOpen || !invoice || !distribution || !sppg) return null;
@@ -69,8 +59,8 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ isOpen, onClose, in
 
     setIsDownloading(true);
     try {
-        const { jsPDF } = (window as any).jspdf;
-        const canvas = await (window as any).html2canvas(input, {
+        const { jsPDF } = window.jspdf;
+        const canvas = await window.html2canvas(input, {
             scale: 2,
             useCORS: true, 
         });

@@ -1,31 +1,31 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
-import { auth, db } from './firebase';
+import { auth, db } from './firebase.js';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs, doc, addDoc, updateDoc, writeBatch, Timestamp } from 'firebase/firestore';
-import LoginPage from './components/LoginPage';
-import { InvoiceStatus, type PurchaseOrder, type Distribution, type Invoice, type SPPG, type Coordinator, type Allocation, type AllocationHistory, type User } from './types';
-import Dashboard from './components/Dashboard';
-import PurchaseOrdersPage from './components/PurchaseOrdersPage';
-import DistributionsPage from './components/DistributionsPage';
-import InvoicesPage from './components/InvoicesPage';
-import SPPGsPage from './components/KitchensPage';
-import CoordinatorsPage from './components/CoordinatorsPage';
-import DatabasePage from './components/DatabasePage';
-import { SELLING_PRICE_PER_CARTON } from './constants';
-import { DashboardIcon, TruckIcon, DocumentTextIcon, ShoppingCartIcon, OfficeBuildingIcon, MenuIcon, UserGroupIcon, DatabaseIcon } from './components/icons/Icons';
+import LoginPage from './components/LoginPage.jsx';
+import { InvoiceStatus } from './constants.js';
+import Dashboard from './components/Dashboard.jsx';
+import PurchaseOrdersPage from './components/PurchaseOrdersPage.jsx';
+import DistributionsPage from './components/DistributionsPage.jsx';
+import InvoicesPage from './components/InvoicesPage.jsx';
+import SPPGsPage from './components/KitchensPage.jsx';
+import CoordinatorsPage from './components/CoordinatorsPage.jsx';
+import DatabasePage from './components/DatabasePage.jsx';
+import { SELLING_PRICE_PER_CARTON } from './constants.js';
+import { DashboardIcon, TruckIcon, DocumentTextIcon, ShoppingCartIcon, OfficeBuildingIcon, MenuIcon, UserGroupIcon, DatabaseIcon } from './components/icons/Icons.jsx';
 
 const App = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
   // State is now initialized with empty arrays, to be filled from Firestore
-  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
-  const [sppgs, setSPPGs] = useState<SPPG[]>([]);
-  const [coordinators, setCoordinators] = useState<Coordinator[]>([]);
-  const [distributions, setDistributions] = useState<Distribution[]>([]);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [allocationHistory, setAllocationHistory] = useState<AllocationHistory[]>([]);
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
+  const [sppgs, setSPPGs] = useState([]);
+  const [coordinators, setCoordinators] = useState([]);
+  const [distributions, setDistributions] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [allocationHistory, setAllocationHistory] = useState([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch all data from Firestore
@@ -49,14 +49,14 @@ const App = () => {
             getDocs(collections.allocationHistory),
         ]);
 
-        const toArray = <T,>(snapshot: any): T[] => snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() } as T));
+        const toArray = (snapshot) => snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-        setPurchaseOrders(toArray<PurchaseOrder>(poSnap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-        setSPPGs(toArray<SPPG>(sppgSnap));
-        setCoordinators(toArray<Coordinator>(coordSnap));
-        setDistributions(toArray<Distribution>(distSnap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-        setInvoices(toArray<Invoice>(invSnap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-        setAllocationHistory(toArray<AllocationHistory>(allocHistSnap));
+        setPurchaseOrders(toArray(poSnap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        setSPPGs(toArray(sppgSnap));
+        setCoordinators(toArray(coordSnap));
+        setDistributions(toArray(distSnap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        setInvoices(toArray(invSnap).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        setAllocationHistory(toArray(allocHistSnap));
 
     } catch (error) {
         console.error("Error fetching data from Firestore:", error);
@@ -84,7 +84,7 @@ const App = () => {
     return () => unsubscribe();
   }, [fetchData]);
   
-  const addPurchaseOrder = async (po: Omit<PurchaseOrder, 'id' | 'poNumber' | 'remainingCartons' | 'createdAt'>) => {
+  const addPurchaseOrder = async (po) => {
     const newPOData = {
       ...po,
       poNumber: `PO-KDMP-${Date.now()}`,
@@ -99,7 +99,7 @@ const App = () => {
     }
   };
   
-  const updatePurchaseOrderStatus = async (poId: string, status: PurchaseOrder['status']) => {
+  const updatePurchaseOrderStatus = async (poId, status) => {
     const poRef = doc(db, 'purchaseOrders', poId);
     try {
         await updateDoc(poRef, { status });
@@ -109,7 +109,7 @@ const App = () => {
     }
   };
 
-  const allocateStockFromPO = async (poId: string, allocations: Allocation[]) => {
+  const allocateStockFromPO = async (poId, allocations) => {
     const batch = writeBatch(db);
     const poToUpdate = purchaseOrders.find(p => p.id === poId);
     if (!poToUpdate) return;
@@ -121,7 +121,7 @@ const App = () => {
     const poRef = doc(db, 'purchaseOrders', poId);
     batch.update(poRef, { remainingCartons: poToUpdate.remainingCartons - totalAllocated });
 
-    const newHistoryItems: AllocationHistory[] = [];
+    const newHistoryItems = [];
     const updatedCoords = new Map(coordinators.map(c => [c.id, {...c}]));
 
     allocations.forEach(alloc => {
@@ -155,7 +155,7 @@ const App = () => {
     }
   };
   
- const addDistribution = async (dist: Omit<Distribution, 'id' | 'suratJalanNumber' | 'bastNumber' | 'createdAt'>) => {
+  const addDistribution = async (dist) => {
     const coordinator = coordinators.find(c => c.id === dist.coordinatorId);
     if (!coordinator || coordinator.stock < dist.cartons) return;
 
@@ -184,7 +184,7 @@ const App = () => {
     }
   };
   
-  const addInvoice = async (dist: Distribution) => {
+  const addInvoice = async (dist) => {
     const batch = writeBatch(db);
     const now = new Date();
     const newInvoiceData = {
@@ -213,14 +213,14 @@ const App = () => {
     }
   };
 
-  const addSPPG = async (sppg: Omit<SPPG, 'id'>) => {
+  const addSPPG = async (sppg) => {
     try {
         const docRef = await addDoc(collection(db, 'sppgs'), sppg);
         setSPPGs(prev => [{ id: docRef.id, ...sppg }, ...prev]);
     } catch(e) { console.error("Error adding SPPG: ", e); }
   };
 
-  const updateSPPG = async (sppgId: string, updatedData: Partial<SPPG>) => {
+  const updateSPPG = async (sppgId, updatedData) => {
     const sppgRef = doc(db, 'sppgs', sppgId);
     try {
         await updateDoc(sppgRef, updatedData);
@@ -228,7 +228,7 @@ const App = () => {
     } catch(e) { console.error("Error updating SPPG: ", e); }
   };
 
-  const addCoordinator = async (coord: Omit<Coordinator, 'id' | 'sppgIds' | 'stock'>) => {
+  const addCoordinator = async (coord) => {
     const newCoordData = { ...coord, sppgIds: [], stock: 0 };
     try {
         const docRef = await addDoc(collection(db, 'coordinators'), newCoordData);
@@ -236,7 +236,7 @@ const App = () => {
     } catch(e) { console.error("Error adding coordinator: ", e); }
   };
   
-  const updateCoordinator = async (coordinatorId: string, updatedData: Partial<Coordinator>) => {
+  const updateCoordinator = async (coordinatorId, updatedData) => {
     const coordRef = doc(db, 'coordinators', coordinatorId);
     try {
         await updateDoc(coordRef, updatedData);
@@ -244,7 +244,7 @@ const App = () => {
     } catch(e) { console.error("Error updating coordinator: ", e); }
   };
 
-  const updateInvoiceStatus = async (invoiceId: string, status: Invoice['status']) => {
+  const updateInvoiceStatus = async (invoiceId, status) => {
     const invRef = doc(db, 'invoices', invoiceId);
     try {
         await updateDoc(invRef, { status });
@@ -252,7 +252,7 @@ const App = () => {
     } catch(e) { console.error("Error updating invoice: ", e); }
   };
 
-  const updateDistributionStatus = async (distId: string, status: Distribution['status']) => {
+  const updateDistributionStatus = async (distId, status) => {
     const distRef = doc(db, 'distributions', distId);
     try {
         await updateDoc(distRef, { status });
@@ -270,7 +270,7 @@ const App = () => {
     }
   };
 
-  const NavItem = ({ to, icon, children }: { to: string, icon: React.ReactNode, children: React.ReactNode }) => (
+  const NavItem = ({ to, icon, children }) => (
     <li>
       <NavLink to={to} className={({ isActive }) => `flex items-center p-3 my-1 rounded-lg transition-colors duration-200 ${isActive ? 'bg-primary-light text-white shadow-md' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-800'}`} onClick={() => setSidebarOpen(false)}>
         {icon}
@@ -339,7 +339,7 @@ const App = () => {
           </div>
           <nav className="p-4">
             <ul>
-              <NavItem to="/" icon={<DashboardIcon />} >Dashboard</NavItem>
+              <NavItem to="/" icon={<DashboardIcon />}>Dashboard</NavItem>
               <NavItem to="/purchase-orders" icon={<ShoppingCartIcon />}>PO</NavItem>
               <NavItem to="/distributions" icon={<TruckIcon />}>Distribusi</NavItem>
               <NavItem to="/invoices" icon={<DocumentTextIcon />}>Invoices</NavItem>

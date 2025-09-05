@@ -1,19 +1,12 @@
 import { useState, useEffect } from 'react';
-import { type SPPG } from '../types';
-import Modal from './Modal';
-import { PencilIcon, PlusIcon } from './icons/Icons';
+import Modal from './Modal.jsx';
+import { PencilIcon, PlusIcon } from './icons/Icons.jsx';
 
-interface AddSPPGModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: (sppg: Omit<SPPG, 'id'>) => void;
-}
-
-const AddSPPGModal: React.FC<AddSPPGModalProps> = ({ isOpen, onClose, onSave }) => {
-    const initialFormState: Omit<SPPG, 'id'> = { name: '', district: '', address: '', contactPerson: '', contactPhone: '' };
+const AddSPPGModal = ({ isOpen, onClose, onSave }) => {
+    const initialFormState = { name: '', district: '', address: '', contactPerson: '', contactPhone: '' };
     const [formData, setFormData] = useState(initialFormState);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -60,23 +53,16 @@ const AddSPPGModal: React.FC<AddSPPGModalProps> = ({ isOpen, onClose, onSave }) 
     );
 };
 
-interface EditSPPGModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    sppg: SPPG;
-    onSave: (sppg: SPPG) => void;
-}
-
-const EditSPPGModal: React.FC<EditSPPGModalProps> = ({ isOpen, onClose, sppg, onSave }) => {
-    const [formData, setFormData] = useState<SPPG>(sppg);
+const EditSPPGModal = ({ isOpen, onClose, sppg, onSave }) => {
+    const [formData, setFormData] = useState(sppg);
 
     useEffect(() => {
         setFormData(sppg);
     }, [sppg]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value } as SPPG));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSave = () => {
@@ -116,23 +102,17 @@ const EditSPPGModal: React.FC<EditSPPGModalProps> = ({ isOpen, onClose, sppg, on
     );
 };
 
-interface SPPGsPageProps {
-    sppgs: SPPG[];
-    updateSPPG: (id: string, data: Partial<SPPG>) => void;
-    addSPPG: (sppg: Omit<SPPG, 'id'>) => void;
-}
-
-const SPPGsPage: React.FC<SPPGsPageProps> = ({ sppgs, updateSPPG, addSPPG }) => {
+const SPPGsPage = ({ sppgs, updateSPPG, addSPPG }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingSPPG, setEditingSPPG] = useState<SPPG | null>(null);
+  const [editingSPPG, setEditingSPPG] = useState(null);
 
-  const handleEditClick = (sppg: SPPG) => {
+  const handleEditClick = (sppg) => {
     setEditingSPPG(sppg);
     setIsEditModalOpen(true);
   };
 
-  const handleSaveSPPG = (updatedData: SPPG) => {
+  const handleSaveSPPG = (updatedData) => {
     if (editingSPPG) {
         updateSPPG(editingSPPG.id, updatedData);
     }
@@ -149,7 +129,7 @@ const SPPGsPage: React.FC<SPPGsPageProps> = ({ sppgs, updateSPPG, addSPPG }) => 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sppgs.map((sppg: SPPG) => (
+        {sppgs.map((sppg) => (
           <div key={sppg.id} className="bg-surface rounded-xl shadow-md p-6 border-l-4 border-primary flex flex-col">
             <div className="flex-grow">
                 <div className="flex justify-between items-start">

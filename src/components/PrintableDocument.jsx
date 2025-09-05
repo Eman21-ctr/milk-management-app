@@ -1,17 +1,7 @@
 import { useState } from 'react';
-import { type Distribution, type SPPG, type Coordinator } from '../types';
-import { DownloadIcon } from './icons/Icons';
+import { DownloadIcon } from './icons/Icons.jsx';
 
-interface PrintableDocumentProps {
-    isOpen: boolean;
-    onClose: () => void;
-    docType: 'sj' | 'bast';
-    distribution: Distribution;
-    sppg?: SPPG;
-    coordinator?: Coordinator;
-}
-
-const PrintableDocument: React.FC<PrintableDocumentProps> = ({ isOpen, onClose, docType, distribution, sppg, coordinator }) => {
+const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coordinator }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   if (!isOpen) return null;
 
@@ -24,8 +14,8 @@ const PrintableDocument: React.FC<PrintableDocumentProps> = ({ isOpen, onClose, 
 
     setIsDownloading(true);
     try {
-        const { jsPDF } = (window as any).jspdf;
-        const canvas = await (window as any).html2canvas(input, {
+        const { jsPDF } = window.jspdf;
+        const canvas = await window.html2canvas(input, {
             scale: 2,
             useCORS: true, 
         });

@@ -1,19 +1,12 @@
 import { useState, useEffect } from 'react';
-import { type Coordinator, type SPPG } from '../types';
-import Modal from './Modal';
-import { PencilIcon, PlusIcon } from './icons/Icons';
+import Modal from './Modal.jsx';
+import { PencilIcon, PlusIcon } from './icons/Icons.jsx';
 
-interface AddCoordinatorModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (data: Omit<Coordinator, 'id' | 'sppgIds' | 'stock'>) => void;
-}
-
-const AddCoordinatorModal: React.FC<AddCoordinatorModalProps> = ({ isOpen, onClose, onSave }) => {
-    const initialFormState: Omit<Coordinator, 'id' | 'sppgIds' | 'stock'> = { name: '', region: '', contactPerson: '', contactPhone: '' };
+const AddCoordinatorModal = ({ isOpen, onClose, onSave }) => {
+    const initialFormState = { name: '', region: '', contactPerson: '', contactPhone: '' };
     const [formData, setFormData] = useState(initialFormState);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -56,27 +49,19 @@ const AddCoordinatorModal: React.FC<AddCoordinatorModalProps> = ({ isOpen, onClo
     );
 };
 
-interface EditCoordinatorModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  coordinator: Coordinator;
-  allSPPGs: SPPG[];
-  onSave: (data: Coordinator) => void;
-}
-
-const EditCoordinatorModal: React.FC<EditCoordinatorModalProps> = ({ isOpen, onClose, coordinator, allSPPGs, onSave }) => {
-    const [formData, setFormData] = useState<Coordinator>(coordinator);
+const EditCoordinatorModal = ({ isOpen, onClose, coordinator, allSPPGs, onSave }) => {
+    const [formData, setFormData] = useState(coordinator);
 
     useEffect(() => {
         setFormData(coordinator);
     }, [coordinator]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value } as Coordinator));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSPPGToggle = (sppgId: string) => {
+    const handleSPPGToggle = (sppgId) => {
         setFormData(prev => {
             const sppgIds = prev.sppgIds.includes(sppgId)
                 ? prev.sppgIds.filter(id => id !== sppgId)
@@ -112,7 +97,7 @@ const EditCoordinatorModal: React.FC<EditCoordinatorModalProps> = ({ isOpen, onC
                 <div>
                     <label className="block text-sm font-medium text-gray-700">SPPG yang Ditangani</label>
                     <div className="mt-2 space-y-2 max-h-40 overflow-y-auto p-2 border rounded-md">
-                        {allSPPGs.map((sppg: SPPG) => (
+                        {allSPPGs.map((sppg) => (
                             <div key={sppg.id} className="flex items-center">
                                 <input
                                     id={`sppg-${sppg.id}`}
@@ -135,31 +120,24 @@ const EditCoordinatorModal: React.FC<EditCoordinatorModalProps> = ({ isOpen, onC
     );
 };
 
-interface CoordinatorsPageProps {
-    coordinators: Coordinator[];
-    sppgs: SPPG[];
-    updateCoordinator: (id: string, data: Partial<Coordinator>) => void;
-    addCoordinator: (data: Omit<Coordinator, 'id' | 'sppgIds' | 'stock'>) => void;
-}
-
-const CoordinatorsPage: React.FC<CoordinatorsPageProps> = ({ coordinators, sppgs, updateCoordinator, addCoordinator }) => {
+const CoordinatorsPage = ({ coordinators, sppgs, updateCoordinator, addCoordinator }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingCoordinator, setEditingCoordinator] = useState<Coordinator | null>(null);
+  const [editingCoordinator, setEditingCoordinator] = useState(null);
 
-  const handleEditClick = (coordinator: Coordinator) => {
+  const handleEditClick = (coordinator) => {
     setEditingCoordinator(coordinator);
     setIsEditModalOpen(true);
   };
 
-  const handleSaveCoordinator = (updatedData: Coordinator) => {
+  const handleSaveCoordinator = (updatedData) => {
     if (editingCoordinator) {
       updateCoordinator(editingCoordinator.id, updatedData);
     }
   };
   
-  const getSPPGsForCoordinator = (coordinator: Coordinator) => {
-    return coordinator.sppgIds.map((id: string) => sppgs.find((k: SPPG) => k.id === id)).filter(Boolean);
+  const getSPPGsForCoordinator = (coordinator) => {
+    return coordinator.sppgIds.map((id) => sppgs.find((k) => k.id === id)).filter(Boolean);
   };
 
   return (
@@ -173,7 +151,7 @@ const CoordinatorsPage: React.FC<CoordinatorsPageProps> = ({ coordinators, sppgs
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {coordinators.map((coordinator: Coordinator) => (
+        {coordinators.map((coordinator) => (
           <div key={coordinator.id} className="bg-surface rounded-xl shadow-md p-6 border-l-4 border-secondary flex flex-col">
             <div className="flex-grow">
                 <div className="flex justify-between items-start">
@@ -193,7 +171,7 @@ const CoordinatorsPage: React.FC<CoordinatorsPageProps> = ({ coordinators, sppgs
                 <div className="mt-4 pt-4 border-t">
                   <h4 className="font-semibold text-sm mb-2">Daftar SPPG:</h4>
                   <ul className="list-disc list-inside text-sm space-y-1 text-text-secondary">
-                    {getSPPGsForCoordinator(coordinator).map((k: SPPG | undefined) => k && <li key={k.id}>{k.name}</li>)}
+                    {getSPPGsForCoordinator(coordinator).map((k) => k && <li key={k.id}>{k.name}</li>)}
                     {getSPPGsForCoordinator(coordinator).length === 0 && <li className="text-gray-400">Belum ada SPPG</li>}
                   </ul>
                 </div>
