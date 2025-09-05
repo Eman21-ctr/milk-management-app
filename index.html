@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Ikon bisa Anda sesuaikan nanti di folder `public` Vite -->
+    <link rel="icon" type="image/png" href="/logo-kdmp.png" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KDMP Penfui Timur - Milk Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN (tetap dipertahankan untuk kemudahan) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                DEFAULT: '#0D47A1',
+                'light': '#1E88E5',
+                'dark': '#0D47A1',
+              },
+              secondary: '#FFC107',
+              accent: '#4CAF50',
+              background: '#F5F7FA',
+              surface: '#FFFFFF',
+              text: {
+                primary: '#212121',
+                secondary: '#757575',
+              }
+            },
+          }
+        }
+      }
+    </script>
+    
+    <!-- Menghapus importmap karena Vite yang akan mengelola dependensi -->
+
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-text-primary">
+    <div id="root"></div>
+    
+    <!-- Pustaka eksternal untuk PDF (tetap dipertahankan) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Ini adalah baris terpenting: menunjuk ke file entri utama di folder src -->
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
