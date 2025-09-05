@@ -1,51 +1,31 @@
-import { PurchaseOrder, Distribution, Invoice, Coordinator } from '../types';
-import { ShoppingCartIcon, ArchiveIcon } from './icons/Icons';
+import { type PurchaseOrder, type Distribution, type Invoice, type Coordinator, InvoiceStatus, DistributionStatus, POStatus } from '../types';
+import { TruckIcon, DocumentTextIcon, ArchiveIcon } from './icons/Icons';
 
-interface StatCardProps {
-  icon: React.ReactNode;
-  title: string;
-  value: string | number;
-  color: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({ icon, title, value, color }) => (
-  <div className="bg-surface rounded-xl shadow-md p-6 flex items-center">
-    <div className={`rounded-full p-3 ${color}`}>
-      {icon}
+// A reusable card component for displaying statistics.
+const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; subtext?: string }> = ({ title, value, icon, subtext }) => (
+    <div className="bg-surface rounded-xl shadow-md p-6 flex items-center border-l-4 border-primary">
+        <div className="bg-primary-light p-3 rounded-full mr-4">
+            {icon}
+        </div>
+        <div>
+            <p className="text-sm text-text-secondary">{title}</p>
+            <p className="text-2xl font-bold text-text-primary">{value}</p>
+            {subtext && <p className="text-xs text-text-secondary mt-1">{subtext}</p>}
+        </div>
     </div>
-    <div className="ml-4">
-      <p className="text-sm text-text-secondary font-medium">{title}</p>
-      <p className="text-2xl font-bold text-text-primary">{value}</p>
-    </div>
-  </div>
 );
 
-interface ActivityCardProps {
-    item: PurchaseOrder | Distribution;
-}
+// A reusable component for listing recent activities.
+const RecentActivityList: React.FC<{ title: string; items: any[]; renderItem: (item: any) => React.ReactNode }> = ({ title, items, renderItem }) => (
+    <div className="bg-surface rounded-xl shadow-md p-6">
+        <h3 className="text-lg font-bold text-primary-dark mb-4">{title}</h3>
+        <ul className="space-y-3">
+            {items.length > 0 ? items.slice(0, 5).map(renderItem) : <p className="text-sm text-gray-500">Tidak ada aktivitas terbaru.</p>}
+        </ul>
+    </div>
+);
 
-const ActivityCard: React.FC<ActivityCardProps> = ({ item }) => {
-    const isPO = 'poNumber' in item;
-    const date = isPO ? item.orderDate : item.distributionDate;
-    const type = isPO ? 'Purchase Order' : 'Distribusi';
-    const detail = isPO ? `${item.poNumber} - ${item.totalCartons.toLocaleString('id-ID')} Kartoon Box` : `${item.suratJalanNumber} - ${item.cartons.toLocaleString('id-ID')} Kartoon Box`;
-    const status = item.status;
-    const statusClass = isPO ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800';
-    const borderColor = isPO ? 'border-primary' : 'border-accent';
-    const typeColor = isPO ? 'text-primary-dark' : 'text-accent';
-
-    return (
-        <div className={`bg-white p-4 rounded-lg shadow border-l-4 ${borderColor}`}>
-            <div className="flex justify-between items-center mb-2">
-                <p className={`font-bold text-sm ${typeColor}`}>{type}</p>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusClass}`}>{status}</span>
-            </div>
-            <p className="text-sm text-text-primary mb-3">{detail}</p>
-            <p className="text-xs text-text-secondary text-right">{new Date(date).toLocaleDateString('id-ID')}</p>
-        </div>
-    );
-};
-
+// Props for the Dashboard component, as provided in App.tsx
 interface DashboardProps {
     purchaseOrders: PurchaseOrder[];
     distributions: Distribution[];
@@ -55,115 +35,83 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ purchaseOrders, distributions, invoices, availableStock, coordinators }) => {
-  const totalPOValue = purchaseOrders.reduce((sum: number, po: PurchaseOrder) => sum + po.totalPrice, 0);
-  const maxStock = Math.max(...coordinators.map((c: Coordinator) => c.stock), 1); // Use 1 to prevent division by zero
-  const recentActivities = [...purchaseOrders, ...distributions].sort((a,b) => new Date('orderDate' in a ? a.orderDate : a.distributionDate).getTime() < new Date('orderDate' in b ? b.orderDate : b.distributionDate).getTime() ? 1 : -1).slice(0, 5);
+    // Calculate key statistics for the dashboard cards.
+    const pendingDistributions = distributions.filter(d => d.status !== DistributionStatus.DELIVERED).length;
+    const unpaidInvoices = invoices.filter(i => i.status === InvoiceStatus.UNPAID);
+    const unpaidInvoicesCount = unpaidInvoices.length;
+    const unpaidAmount = unpaidInvoices.reduce((sum, inv) => sum + inv.amount, 0);
 
+    const getCoordinatorName = (id: string) => coordinators.find(c => c.id === id)?.name || 'N/A';
 
-  return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-4">Ringkasan Kinerja</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="space-y-6">
-                <StatCard
+    return (
+        <div>
+            <h2 className="text-2xl font-bold text-text-primary mb-6">Dashboard</h2>
+            
+            {/* Statistics Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <StatCard 
+                    title="Total Stok Tersedia"
+                    value={`${availableStock.toLocaleString('id-ID')} Karton`}
                     icon={<ArchiveIcon className="h-6 w-6 text-white" />}
-                    title="Stok Tersedia (Kartoon Box)"
-                    value={availableStock.toLocaleString('id-ID')}
-                    color="bg-blue-500"
+                    subtext="Di semua Koordinator Wilayah"
                 />
-                <StatCard
-                    icon={<ShoppingCartIcon className="h-6 w-6 text-white" />}
-                    title="Total Nilai PO"
-                    value={`Rp ${totalPOValue.toLocaleString('id-ID')}`}
-                    color="bg-green-500"
+                <StatCard 
+                    title="Distribusi Pending"
+                    value={pendingDistributions.toLocaleString('id-ID')}
+                    icon={<TruckIcon className="h-6 w-6 text-white" />}
+                    subtext="Menunggu pengiriman/konfirmasi"
+                />
+                <StatCard 
+                    title="Invoice Belum Lunas"
+                    value={unpaidInvoicesCount.toLocaleString('id-ID')}
+                    icon={<DocumentTextIcon className="h-6 w-6 text-white" />}
+                    subtext={`Total: Rp ${unpaidAmount.toLocaleString('id-ID')}`}
                 />
             </div>
-            <div className="lg:col-span-2 bg-surface rounded-xl shadow-md p-6">
-                 <h3 className="text-xl font-bold text-text-primary mb-4">Stok Terkini per Wilayah</h3>
-                 {coordinators.length > 0 ? (
-                    <div className="space-y-3 pt-2">
-                      {coordinators.map((coordinator: Coordinator) => {
-                        const barWidth = maxStock > 0 ? (coordinator.stock / maxStock) * 100 : 0;
-                        return (
-                          <div key={coordinator.id} className="flex items-center group" title={`${coordinator.region}: ${coordinator.stock.toLocaleString('id-ID')} karton`}>
-                            <div className="w-24 md:w-32 text-right pr-4">
-                              <p className="text-xs md:text-sm text-text-secondary font-medium truncate">{coordinator.region}</p>
+            
+            {/* Recent Activities Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <RecentActivityList 
+                    title="Purchase Orders Terbaru"
+                    items={purchaseOrders}
+                    renderItem={(po: PurchaseOrder) => (
+                        <li key={po.id} className="flex justify-between items-center text-sm p-2 rounded-md hover:bg-gray-50 transition-colors">
+                            <div>
+                                <p className="font-medium text-primary-dark">{po.poNumber}</p>
+                                <p className="text-text-secondary">{new Date(po.orderDate).toLocaleDateString('id-ID')}</p>
                             </div>
-                            <div className="flex-1 flex items-center">
-                              <div className="w-full bg-gray-200 rounded-md h-5">
-                                <div 
-                                   className="bg-primary-light h-5 rounded-md group-hover:bg-primary-dark transition-colors duration-200"
-                                   style={{ width: `${barWidth}%` }}
-                                ></div>
-                              </div>
-                              <p className="ml-3 text-sm font-bold text-text-primary w-14 text-left">{coordinator.stock.toLocaleString('id-ID')}</p>
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                po.status === POStatus.RECEIVED ? 'bg-green-100 text-green-800' 
+                                : po.status === POStatus.SENT ? 'bg-blue-100 text-blue-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                                {po.status}
+                            </span>
+                        </li>
+                    )}
+                />
+                <RecentActivityList 
+                    title="Distribusi Terbaru"
+                    items={distributions}
+                    renderItem={(dist: Distribution) => (
+                        <li key={dist.id} className="flex justify-between items-center text-sm p-2 rounded-md hover:bg-gray-50 transition-colors">
+                            <div>
+                                <p className="font-medium text-primary-dark">{dist.suratJalanNumber}</p>
+                                <p className="text-text-secondary">{dist.cartons} Karton (Korwil: {getCoordinatorName(dist.coordinatorId)})</p>
                             </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center h-48">
-                        <p className="text-text-secondary">Tidak ada data koordinator.</p>
-                    </div>
-                )}
+                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                 dist.status === DistributionStatus.DELIVERED ? 'bg-green-100 text-green-800' 
+                                 : dist.status === DistributionStatus.IN_TRANSIT ? 'bg-yellow-100 text-yellow-800'
+                                 : 'bg-gray-100 text-gray-800'
+                            }`}>
+                                {dist.status}
+                            </span>
+                        </li>
+                    )}
+                />
             </div>
         </div>
-      </div>
-      
-      <div className="bg-surface rounded-xl shadow-md p-6">
-        <h3 className="text-xl font-bold text-text-primary mb-4">Aktivitas Terbaru</h3>
-        
-        {/* Desktop View */}
-        <div className="overflow-x-auto hidden md:block">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="p-3 font-semibold text-sm">Tanggal</th>
-                <th className="p-3 font-semibold text-sm">Aktivitas</th>
-                <th className="p-3 font-semibold text-sm">Detail</th>
-                <th className="p-3 font-semibold text-sm">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentActivities.map(item => {
-                if ('poNumber' in item) { // It's a PurchaseOrder
-                  return (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="p-3">{new Date(item.orderDate).toLocaleDateString('id-ID')}</td>
-                      <td className="p-3 font-medium text-primary-dark">Purchase Order</td>
-                      <td className="p-3">{item.poNumber} - {item.totalCartons.toLocaleString('id-ID')} Kartoon Box</td>
-                      <td className="p-3"><span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">{item.status}</span></td>
-                    </tr>
-                  )
-                } else { // It's a Distribution
-                  return (
-                     <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="p-3">{new Date(item.distributionDate).toLocaleDateString('id-ID')}</td>
-                      <td className="p-3 font-medium text-accent">Distribusi</td>
-                      <td className="p-3">{item.suratJalanNumber} - {item.cartons.toLocaleString('id-ID')} Kartoon Box</td>
-                      <td className="p-3"><span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">{item.status}</span></td>
-                    </tr>
-                  )
-                }
-              })}
-            </tbody>
-          </table>
-        </div>
-
-         {/* Mobile View */}
-         <div className="md:hidden space-y-3">
-             {recentActivities.length > 0 ? (
-                 recentActivities.map(item => <ActivityCard key={item.id} item={item} />)
-             ) : (
-                 <p className="text-center text-text-secondary">Tidak ada aktivitas terbaru.</p>
-             )}
-         </div>
-
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Dashboard;
