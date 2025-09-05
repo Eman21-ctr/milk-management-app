@@ -1,8 +1,14 @@
-import React from 'react';
-import { POStatus, DistributionStatus, InvoiceStatus } from '../types';
-import { ShoppingCartIcon, TruckIcon, DocumentTextIcon, ArchiveIcon } from './icons/Icons';
+import { PurchaseOrder, Distribution, Invoice, Coordinator } from '../types';
+import { ShoppingCartIcon, ArchiveIcon } from './icons/Icons';
 
-const StatCard = ({ icon, title, value, color }) => (
+interface StatCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: string | number;
+  color: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ icon, title, value, color }) => (
   <div className="bg-surface rounded-xl shadow-md p-6 flex items-center">
     <div className={`rounded-full p-3 ${color}`}>
       {icon}
@@ -14,7 +20,11 @@ const StatCard = ({ icon, title, value, color }) => (
   </div>
 );
 
-const ActivityCard = ({ item }) => {
+interface ActivityCardProps {
+    item: PurchaseOrder | Distribution;
+}
+
+const ActivityCard: React.FC<ActivityCardProps> = ({ item }) => {
     const isPO = 'poNumber' in item;
     const date = isPO ? item.orderDate : item.distributionDate;
     const type = isPO ? 'Purchase Order' : 'Distribusi';
@@ -36,9 +46,17 @@ const ActivityCard = ({ item }) => {
     );
 };
 
-const Dashboard = ({ purchaseOrders, distributions, invoices, availableStock, coordinators }) => {
-  const totalPOValue = purchaseOrders.reduce((sum, po) => sum + po.totalPrice, 0);
-  const maxStock = Math.max(...coordinators.map(c => c.stock), 1); // Use 1 to prevent division by zero
+interface DashboardProps {
+    purchaseOrders: PurchaseOrder[];
+    distributions: Distribution[];
+    invoices: Invoice[];
+    availableStock: number;
+    coordinators: Coordinator[];
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ purchaseOrders, distributions, invoices, availableStock, coordinators }) => {
+  const totalPOValue = purchaseOrders.reduce((sum: number, po: PurchaseOrder) => sum + po.totalPrice, 0);
+  const maxStock = Math.max(...coordinators.map((c: Coordinator) => c.stock), 1); // Use 1 to prevent division by zero
   const recentActivities = [...purchaseOrders, ...distributions].sort((a,b) => new Date('orderDate' in a ? a.orderDate : a.distributionDate).getTime() < new Date('orderDate' in b ? b.orderDate : b.distributionDate).getTime() ? 1 : -1).slice(0, 5);
 
 
@@ -65,7 +83,7 @@ const Dashboard = ({ purchaseOrders, distributions, invoices, availableStock, co
                  <h3 className="text-xl font-bold text-text-primary mb-4">Stok Terkini per Wilayah</h3>
                  {coordinators.length > 0 ? (
                     <div className="space-y-3 pt-2">
-                      {coordinators.map(coordinator => {
+                      {coordinators.map((coordinator: Coordinator) => {
                         const barWidth = maxStock > 0 ? (coordinator.stock / maxStock) * 100 : 0;
                         return (
                           <div key={coordinator.id} className="flex items-center group" title={`${coordinator.region}: ${coordinator.stock.toLocaleString('id-ID')} karton`}>

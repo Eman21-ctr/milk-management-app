@@ -1,18 +1,26 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { DistributionStatus } from '../types';
+import { useState, useMemo, useEffect } from 'react';
+import { type Distribution, type SPPG, type Coordinator, DistributionStatus } from '../types';
 import Modal from './Modal';
 import PrintableDocument from './PrintableDocument';
 import { PlusIcon, DownloadIcon } from './icons/Icons';
 
-const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators, updateDistributionStatus }) => {
+interface DistributionsPageProps {
+    distributions: Distribution[];
+    addDistribution: (dist: Omit<Distribution, 'id' | 'suratJalanNumber' | 'bastNumber' | 'createdAt'>) => void;
+    sppgs: SPPG[];
+    coordinators: Coordinator[];
+    updateDistributionStatus: (distId: string, status: Distribution['status']) => void;
+}
+
+const DistributionsPage: React.FC<DistributionsPageProps> = ({ distributions, addDistribution, sppgs, coordinators, updateDistributionStatus }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-  const [docToPrint, setDocToPrint] = useState(null);
+  const [docToPrint, setDocToPrint] = useState<{dist: Distribution, type: 'sj' | 'bast'} | null>(null);
 
   const [selectedSPPG, setSelectedSPPG] = useState('');
   const [selectedCoordinator, setSelectedCoordinator] = useState('');
   const [cartons, setCartons] = useState(1);
-  const [status, setStatus] = useState(DistributionStatus.PENDING);
+  const [status, setStatus] = useState<Distribution['status']>(DistributionStatus.PENDING);
 
   const selectedCoordinatorData = useMemo(() => {
     return coordinators.find(c => c.id === selectedCoordinator);
@@ -37,7 +45,7 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
     } else if (cartons < 1) {
         setCartons(1);
     }
-  }, [selectedCoordinator, selectedCoordinatorData]);
+  }, [cartons, selectedCoordinatorData]);
 
   const handleCreateDistribution = () => {
     if (!selectedCoordinator) {
@@ -73,12 +81,12 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
     setStatus(DistributionStatus.PENDING);
   };
   
-  const handlePrintClick = (dist, type) => {
+  const handlePrintClick = (dist: Distribution, type: 'sj' | 'bast') => {
     setDocToPrint({ dist, type });
     setIsPrintModalOpen(true);
   }
 
-  const getStatusClass = (status) => {
+  const getStatusClass = (status: Distribution['status']) => {
     switch(status) {
       case DistributionStatus.PENDING: return 'bg-gray-100 text-gray-800';
       case DistributionStatus.IN_TRANSIT: return 'bg-yellow-100 text-yellow-800';
@@ -87,12 +95,12 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
     }
   }
 
-  const getSPPGName = (sppgId) => sppgs.find(k => k.id === sppgId)?.name || 'N/A';
-  const getCoordinatorName = (coordinatorId) => coordinators.find(c => c.id === coordinatorId)?.name || 'N/A';
+  const getSPPGName = (sppgId: string) => sppgs.find(k => k.id === sppgId)?.name || 'N/A';
+  const getCoordinatorName = (coordinatorId: string) => coordinators.find(c => c.id === coordinatorId)?.name || 'N/A';
 
   const isFormValid = selectedCoordinator && selectedSPPG && cartons > 0 && cartons <= (selectedCoordinatorData?.stock ?? 0);
 
-  const Card = ({ dist }) => (
+  const Card: React.FC<{dist: Distribution}> = ({ dist }) => (
     <div className="bg-surface rounded-lg shadow p-4 space-y-2 border-l-4 border-accent">
         <div className="flex justify-between items-center">
             <p className="font-bold text-primary-dark">{dist.suratJalanNumber}</p>
@@ -153,7 +161,7 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
               </tr>
             </thead>
             <tbody>
-              {distributions.map(dist => (
+              {distributions.map((dist: Distribution) => (
                 <tr key={dist.id} className="border-b hover:bg-gray-50">
                   <td className="p-3 font-medium text-primary-dark">{dist.suratJalanNumber}</td>
                   <td className="p-3">{new Date(dist.distributionDate).toLocaleDateString('id-ID')}</td>
@@ -181,7 +189,7 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
         </div>
         {/* Mobile View */}
         <div className="md:hidden space-y-3">
-            {distributions.map(dist => <Card key={dist.id} dist={dist} />)}
+            {distributions.map((dist: Distribution) => <Card key={dist.id} dist={dist} />)}
         </div>
       </div>
 
@@ -196,7 +204,7 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
             >
               <option value="">-- Pilih Korwil --</option>
-              {coordinators.map(c => <option key={c.id} value={c.id}>{c.name} (Stok: {c.stock.toLocaleString('id-ID')})</option>)}
+              {coordinators.map((c: Coordinator) => <option key={c.id} value={c.id}>{c.name} (Stok: {c.stock.toLocaleString('id-ID')})</option>)}
             </select>
           </div>
           <div>
@@ -209,7 +217,7 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm disabled:bg-gray-100"
             >
               <option value="">-- Pilih SPPG --</option>
-              {filteredSPPGs.map(k => <option key={k.id} value={k.id}>{k.name} - {k.district}</option>)}
+              {filteredSPPGs.map((k: SPPG) => <option key={k.id} value={k.id}>{k.name} - {k.district}</option>)}
             </select>
             {selectedCoordinator && filteredSPPGs.length === 0 && <p className="text-xs text-gray-500 mt-1">Korwil ini tidak menangani SPPG manapun.</p>}
           </div>
@@ -245,8 +253,8 @@ const DistributionsPage = ({ distributions, addDistribution, sppgs, coordinators
             onClose={() => setIsPrintModalOpen(false)} 
             distribution={docToPrint.dist}
             docType={docToPrint.type}
-            sppg={sppgs.find(k => k.id === docToPrint.dist.sppgId)}
-            coordinator={coordinators.find(c => c.id === docToPrint.dist.coordinatorId)}
+            sppg={sppgs.find((k: SPPG) => k.id === docToPrint.dist.sppgId)}
+            coordinator={coordinators.find((c: Coordinator) => c.id === docToPrint.dist.coordinatorId)}
         />
       )}
     </div>

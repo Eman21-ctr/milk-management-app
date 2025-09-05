@@ -4,7 +4,7 @@ import { auth, db } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, getDocs, doc, addDoc, updateDoc, writeBatch, Timestamp } from 'firebase/firestore';
 import LoginPage from './components/LoginPage';
-import { POStatus, DistributionStatus, InvoiceStatus, type PurchaseOrder, type Distribution, type Invoice, type SPPG, type Coordinator, type Allocation, type AllocationHistory, type User } from './types';
+import { InvoiceStatus, type PurchaseOrder, type Distribution, type Invoice, type SPPG, type Coordinator, type Allocation, type AllocationHistory, type User } from './types';
 import Dashboard from './components/Dashboard';
 import PurchaseOrdersPage from './components/PurchaseOrdersPage';
 import DistributionsPage from './components/DistributionsPage';

@@ -1,14 +1,23 @@
-import React, { useState, useMemo } from 'react';
-import { InvoiceStatus, DistributionStatus } from '../types';
+import { useState, useMemo } from 'react';
+import { type Invoice, type SPPG, type Distribution, type Coordinator, InvoiceStatus, DistributionStatus } from '../types';
 import Modal from './Modal';
 import PrintableInvoice from './PrintableInvoice';
 import { PlusIcon, DownloadIcon } from './icons/Icons';
 import { SELLING_PRICE_PER_CARTON } from '../constants';
 
-const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, addInvoice, coordinators }) => {
+interface InvoicesPageProps {
+    invoices: Invoice[];
+    updateInvoiceStatus: (invoiceId: string, status: Invoice['status']) => void;
+    sppgs: SPPG[];
+    distributions: Distribution[];
+    addInvoice: (dist: Distribution) => void;
+    coordinators: Coordinator[];
+}
+
+const InvoicesPage: React.FC<InvoicesPageProps> = ({ invoices, updateInvoiceStatus, sppgs, distributions, addInvoice, coordinators }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-  const [invoiceToPrint, setInvoiceToPrint] = useState(null);
+  const [invoiceToPrint, setInvoiceToPrint] = useState<Invoice | null>(null);
   const [selectedDist, setSelectedDist] = useState('');
 
   const availableDistributions = useMemo(() => {
@@ -26,12 +35,12 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, add
     setSelectedDist('');
   };
 
-  const handlePrintClick = (invoice) => {
+  const handlePrintClick = (invoice: Invoice) => {
     setInvoiceToPrint(invoice);
     setIsPrintModalOpen(true);
   };
 
-  const getStatusClass = (status) => {
+  const getStatusClass = (status: Invoice['status']) => {
     switch(status) {
       case InvoiceStatus.UNPAID: return 'bg-red-100 text-red-800';
       case InvoiceStatus.PAID: return 'bg-green-100 text-green-800';
@@ -40,13 +49,13 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, add
     }
   }
 
-  const getSPPGName = (sppgId) => sppgs.find(k => k.id === sppgId)?.name || 'N/A';
+  const getSPPGName = (sppgId: string) => sppgs.find(k => k.id === sppgId)?.name || 'N/A';
   
-  const handleStatusChange = (invoiceId, newStatus) => {
+  const handleStatusChange = (invoiceId: string, newStatus: Invoice['status']) => {
     updateInvoiceStatus(invoiceId, newStatus);
   };
 
-  const Card = ({ inv }) => (
+  const Card: React.FC<{inv: Invoice}> = ({ inv }) => (
     <div className="bg-surface rounded-lg shadow p-4 space-y-2 border-l-4 border-red-500">
        <div className="flex justify-between items-center">
             <p className="font-bold text-primary-dark">{inv.invoiceNumber}</p>
@@ -108,7 +117,7 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, add
               </tr>
             </thead>
             <tbody>
-              {invoices.map(inv => (
+              {invoices.map((inv: Invoice) => (
                 <tr key={inv.id} className="border-b hover:bg-gray-50">
                   <td className="p-3 font-medium text-primary-dark">{inv.invoiceNumber}</td>
                   <td className="p-3">{new Date(inv.issueDate).toLocaleDateString('id-ID')}</td>
@@ -137,7 +146,7 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, add
         </div>
         {/* Mobile View */}
         <div className="md:hidden space-y-3">
-            {invoices.map(inv => <Card key={inv.id} inv={inv} />)}
+            {invoices.map((inv: Invoice) => <Card key={inv.id} inv={inv} />)}
         </div>
       </div>
 
@@ -152,8 +161,8 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, add
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
             >
               <option value="">-- Pilih Surat Jalan --</option>
-              {availableDistributions.map(d => {
-                const sppg = sppgs.find(k => k.id === d.sppgId);
+              {availableDistributions.map((d: Distribution) => {
+                const sppg = sppgs.find((k: SPPG) => k.id === d.sppgId);
                 return (
                   <option key={d.id} value={d.id}>
                     {d.suratJalanNumber} - {sppg?.name} ({d.cartons} Kartoon Box)
@@ -181,15 +190,15 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, add
       </Modal>
 
       {isPrintModalOpen && invoiceToPrint && (() => {
-          const distribution = distributions.find(d => d.id === invoiceToPrint.distributionId);
+          const distribution = distributions.find((d: Distribution) => d.id === invoiceToPrint.distributionId);
           return (
             <PrintableInvoice
                 isOpen={isPrintModalOpen}
                 onClose={() => setIsPrintModalOpen(false)}
                 invoice={invoiceToPrint}
                 distribution={distribution}
-                sppg={sppgs.find(k => k.id === invoiceToPrint.sppgId)}
-                coordinator={coordinators.find(c => c.id === distribution?.coordinatorId)}
+                sppg={sppgs.find((k: SPPG) => k.id === invoiceToPrint.sppgId)}
+                coordinator={coordinators.find((c: Coordinator) => c.id === distribution?.coordinatorId)}
             />
           )
       })()}
