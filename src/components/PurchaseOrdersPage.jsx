@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { POStatus, MINIMUM_ORDER_CARTONS, PRICE_PER_BATCH, SUPPLIER_NAME } from '../constants.js';
 import Modal from './Modal.jsx';
-import { PlusIcon, InfoIcon, SwitchHorizontalIcon } from './icons/Icons.jsx';
+import { PlusIcon, InfoIcon, SwitchHorizontalIcon, TrashIcon } from './icons/Icons.jsx';
 
 const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
     // Fixed: Initialize allocations as empty object with number values
@@ -67,7 +67,7 @@ const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
     );
 };
 
-const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOrderStatus, coordinators, allocationHistory, allocateStockFromPO }) => {
+const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOrderStatus, deletePurchaseOrder, coordinators, allocationHistory, allocateStockFromPO }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isAllocationModalOpen, setIsAllocationModalOpen] = useState(false);
@@ -120,6 +120,18 @@ const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOr
       }
       setIsAllocationModalOpen(false);
   };
+
+  const handleDelete = (po) => {
+    const confirmDelete = window.confirm(
+      `Apakah Anda yakin ingin menghapus PO ${po.poNumber}?\n\n` +
+      `Jika PO ini sudah memiliki alokasi stok, stok akan dikembalikan ke sistem.\n\n` +
+      `Tindakan ini tidak dapat dibatalkan.`
+    );
+    
+    if (confirmDelete) {
+      deletePurchaseOrder(po.id);
+    }
+  };
   
   const getStatusClass = (status) => {
     switch(status) {
@@ -168,6 +180,9 @@ const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOr
                         <SwitchHorizontalIcon className="h-4 w-4" />
                     </button>
                 )}
+                <button onClick={() => handleDelete(po)} className="text-red-600 hover:text-red-800 p-1">
+                    <TrashIcon className="h-4 w-4" />
+                </button>
             </div>
         </div>
     </div>
@@ -224,6 +239,9 @@ const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOr
                            <SwitchHorizontalIcon />
                        </button>
                      )}
+                     <button title="Hapus PO" onClick={() => handleDelete(po)} className="text-red-600 hover:text-red-800 p-1 inline-block">
+                         <TrashIcon />
+                     </button>
                   </td>
                 </tr>
               ))}

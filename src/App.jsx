@@ -14,6 +14,7 @@ import CoordinatorsPage from './components/CoordinatorsPage.jsx';
 import DatabasePage from './components/DatabasePage.jsx';
 import { SELLING_PRICE_PER_CARTON } from './constants.js';
 import { DashboardIcon, TruckIcon, DocumentTextIcon, ShoppingCartIcon, OfficeBuildingIcon, MenuIcon, UserGroupIcon, DatabaseIcon } from './components/icons/Icons.jsx';
+import { collection, getDocs, doc, addDoc, updateDoc, writeBatch, Timestamp, deleteDoc } from 'firebase/firestore';
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -98,7 +99,66 @@ const App = () => {
         console.error("Error adding PO:", error);
     }
   };
+  const deletePurchaseOrder = async (poId) => {
+  const poToDelete = purchaseOrders.find(p => p.id === poId);
+  if (!poToDelete) return;
+
+  // Cari semua alokasi yang terkait dengan PO ini
+  const relatedAllocations = allocationHistory.filter(alloc => alloc.poId === poId);
   
+  if (relatedAllocations.length > 0) {
+    // Ada stok yang sudah dialokasi, harus dikembalikan
+    const batch = writeBatch(db);
+    const updatedCoords = new Map(coordinators.map(c => [c.id, {...c}]));
+    
+    // Kembalikan stok ke masing-masing koordinator
+    relatedAllocations.forEach(alloc => {
+      const coord = updatedCoords.get(alloc.coordinatorId);
+      if (coord) {
+        const coordRef = doc(db, 'coordinators', alloc.coordinatorId);
+        const newStock = coord.stock - alloc.cartons; // Kurangi stok karena dikembalikan
+        batch.update(coordRef, { stock: Math.max(0, newStock) }); // Pastikan tidak minus
+        coord.stock = Math.max(0, newStock);
+      }
+    });
+
+    // Hapus history alokasi terkait PO ini
+    for (const alloc of relatedAllocations) {
+      const allocRef = doc(db, 'allocationHistory', alloc.id);
+      batch.delete(allocRef);
+    }
+
+    // Hapus PO dari database
+    const poRef = doc(db, 'purchaseOrders', poId);
+    batch.delete(poRef);
+
+    try {
+      await batch.commit();
+      
+      // Update state lokal
+      setPurchaseOrders(prev => prev.filter(p => p.id !== poId));
+      setCoordinators(Array.from(updatedCoords.values()));
+      setAllocationHistory(prev => prev.filter(alloc => alloc.poId !== poId));
+      
+      alert(`PO ${poToDelete.poNumber} berhasil dihapus dan stok dikembalikan.`);
+    } catch (error) {
+      console.error("Error deleting PO:", error);
+      alert("Gagal menghapus PO.");
+    }
+  } else {
+    // Tidak ada alokasi, langsung hapus PO saja
+    try {
+      const poRef = doc(db, 'purchaseOrders', poId);
+      await deleteDoc(poRef);
+      
+      setPurchaseOrders(prev => prev.filter(p => p.id !== poId));
+      alert(`PO ${poToDelete.poNumber} berhasil dihapus.`);
+    } catch (error) {
+      console.error("Error deleting PO:", error);
+      alert("Gagal menghapus PO.");
+    }
+  }
+};
   const updatePurchaseOrderStatus = async (poId, status) => {
     const poRef = doc(db, 'purchaseOrders', poId);
     try {
@@ -355,7 +415,7 @@ const App = () => {
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-4 sm:p-6 lg:p-8">
              <Routes>
               <Route path="/" element={<Dashboard purchaseOrders={purchaseOrders} distributions={distributions} invoices={invoices} availableStock={availableStock} coordinators={coordinators} />} />
-              <Route path="/purchase-orders" element={<PurchaseOrdersPage purchaseOrders={purchaseOrders} addPurchaseOrder={addPurchaseOrder} updatePurchaseOrderStatus={updatePurchaseOrderStatus} allocationHistory={allocationHistory} coordinators={coordinators} allocateStockFromPO={allocateStockFromPO} />} />
+              <Route path="/purchase-orders" element={<PurchaseOrdersPage purchaseOrders={purchaseOrders} addPurchaseOrder={addPurchaseOrder} updatePurchaseOrderStatus={updatePurchaseOrderStatus} deletePurchaseOrder={deletePurchaseOrder} allocationHistory={allocationHistory} coordinators={coordinators} allocateStockFromPO={allocateStockFromPO} />} />
               <Route path="/distributions" element={<DistributionsPage distributions={distributions} addDistribution={addDistribution} sppgs={sppgs} coordinators={coordinators} updateDistributionStatus={updateDistributionStatus} />} />
               <Route path="/invoices" element={<InvoicesPage invoices={invoices} updateInvoiceStatus={updateInvoiceStatus} sppgs={sppgs} distributions={distributions} addInvoice={addInvoice} coordinators={coordinators} />} />
               <Route path="/sppgs" element={<SPPGsPage sppgs={sppgs} updateSPPG={updateSPPG} addSPPG={addSPPG} />} />
