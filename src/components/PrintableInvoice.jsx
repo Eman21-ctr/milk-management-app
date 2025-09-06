@@ -1,6 +1,34 @@
 import { useState } from 'react';
-import { DownloadIcon } from './icons/Icons';
-import { SELLING_PRICE_PER_CARTON, BOTTLES_PER_CARTON } from '../constants.js';
+
+// Constants - sesuaikan dengan nilai aktual aplikasi Anda
+const SELLING_PRICE_PER_CARTON = 75000;
+const BOTTLES_PER_CARTON = 24;
+
+// Icon Components - didefinisikan langsung di file
+const DownloadIcon = ({ className }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+);
+
+const PrintIcon = ({ className }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+    </svg>
+);
+
+const CloseIcon = ({ className }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+);
+
+const SpinnerIcon = ({ className }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+);
 
 // Helper function to convert number to Indonesian words
 const numberToWords = (num) => {
@@ -51,7 +79,30 @@ const numberToWords = (num) => {
 const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   
-  if (!isOpen || !invoice || !distribution || !sppg) return null;
+  // Sample data untuk preview jika props tidak ada
+  const sampleInvoice = {
+    invoiceNumber: 'INV/2025/001',
+    issueDate: new Date().toISOString(),
+    amount: 750000
+  };
+  
+  const sampleDistribution = {
+    bastNumber: 'BAST/2025/001', 
+    distributionDate: new Date().toISOString(),
+    cartons: 10
+  };
+  
+  const sampleSppg = {
+    name: 'Toko ABC',
+    address: 'Jln. Contoh No. 123, Ende'
+  };
+  
+  // Gunakan sample data jika props tidak ada (untuk demo)
+  const invoiceData = invoice || sampleInvoice;
+  const distributionData = distribution || sampleDistribution;
+  const sppgData = sppg || sampleSppg;
+  
+  if (!isOpen) return null;
 
   const handleDownloadPDF = async () => {
     const input = document.getElementById('printable-invoice-area');
@@ -59,10 +110,24 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
 
     setIsDownloading(true);
     try {
+        // Cek apakah jsPDF dan html2canvas tersedia
+        if (!window.jspdf || !window.html2canvas) {
+            alert('Perpustakaan PDF tidak tersedia. Silakan gunakan tombol Print sebagai alternatif.');
+            return;
+        }
+
         const { jsPDF } = window.jspdf;
+        
+        // Improved canvas configuration untuk kualitas dan sizing yang lebih baik
         const canvas = await window.html2canvas(input, {
-            scale: 2,
-            useCORS: true, 
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#ffffff',
+            width: input.scrollWidth,
+            height: input.scrollHeight,
+            windowWidth: 794, // A4 width dalam pixels pada 96 DPI
+            windowHeight: 1123 // A4 height dalam pixels pada 96 DPI
         });
         
         const imgData = canvas.toDataURL('image/png');
@@ -72,177 +137,361 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
             format: 'a4'
         });
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const imgProps= pdf.getImageProperties(imgData);
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        // Dimensi A4 dalam mm
+        const pdfWidth = 210;
+        const pdfHeight = 297;
         
-        const fileName = `INVOICE-${invoice.invoiceNumber.replace(/\//g,'-')}.pdf`;
+        // Hitung dimensi gambar agar fit A4 dengan margin
+        const margin = 10;
+        const maxWidth = pdfWidth - (margin * 2);
+        const maxHeight = pdfHeight - (margin * 2);
+        
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgRatio = imgProps.height / imgProps.width;
+        
+        let finalWidth = maxWidth;
+        let finalHeight = maxWidth * imgRatio;
+        
+        // Jika height melebihi max, scale down
+        if (finalHeight > maxHeight) {
+            finalHeight = maxHeight;
+            finalWidth = maxHeight / imgRatio;
+        }
+
+        // Center gambar di halaman
+        const xPos = (pdfWidth - finalWidth) / 2;
+        const yPos = margin;
+
+        pdf.addImage(imgData, 'PNG', xPos, yPos, finalWidth, finalHeight);
+        
+        const fileName = `INVOICE-${invoiceData.invoiceNumber.replace(/\//g,'-')}.pdf`;
         pdf.save(fileName);
     } catch (error) {
         console.error("Error generating PDF:", error);
-        alert("Gagal membuat PDF. Silakan coba lagi.");
+        alert("Gagal membuat PDF. Silakan coba lagi atau gunakan tombol Print.");
     } finally {
         setIsDownloading(false);
     }
   };
 
+  const handlePrint = () => {
+    const printContent = document.getElementById('printable-invoice-area');
+    const printWindow = window.open('', '', 'width=800,height=600');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Invoice - ${invoiceData.invoiceNumber}</title>
+            <style>
+                /* Print-specific styles */
+                @page {
+                    size: A4;
+                    margin: 15mm;
+                }
+                
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+                
+                body {
+                    margin: 0;
+                    padding: 0;
+                    font-family: Arial, sans-serif;
+                    font-size: 12px;
+                    line-height: 1.4;
+                    color: #333;
+                    background: white;
+                }
+                
+                .print-container {
+                    width: 100%;
+                    max-width: none;
+                    margin: 0;
+                    padding: 0;
+                }
+                
+                /* Pastikan tabel tidak putus */
+                table {
+                    page-break-inside: avoid;
+                    border-collapse: collapse;
+                }
+                
+                /* Hindari memotong elemen ini */
+                .no-break {
+                    page-break-inside: avoid;
+                }
+                
+                /* Sembunyikan elemen yang tidak perlu saat print */
+                .no-print {
+                    display: none !important;
+                }
+                
+                /* Styling spesifik untuk elemen invoice */
+                .invoice-header {
+                    border-bottom: 2px solid #000;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                
+                .invoice-table th {
+                    background-color: #f5f5f5 !important;
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+                
+                .invoice-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                }
+                
+                img {
+                    max-width: 64px;
+                    height: auto;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-container">
+                ${printContent.outerHTML}
+            </div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    window.onafterprint = function() {
+                        window.close();
+                    };
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+  };
+
   return (
-     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-      <div className="bg-surface rounded-lg shadow-xl w-full max-w-4xl">
-        <div className="p-4 border-b flex justify-between items-center">
-            <h3 className="text-lg font-bold text-text-primary">Pratinjau Invoice</h3>
-            <div>
-                 <button
-                    onClick={handleDownloadPDF}
-                    disabled={isDownloading}
-                    className="flex items-center bg-primary text-white font-bold py-2 px-4 rounded-lg mr-2 hover:bg-primary-light disabled:bg-gray-400"
+     <>
+        {/* Print-specific CSS styles */}
+        <style jsx>{`
+            @media print {
+                @page {
+                    size: A4;
+                    margin: 15mm;
+                }
+                
+                .print-only {
+                    display: block !important;
+                }
+                
+                .no-print {
+                    display: none !important;
+                }
+                
+                .printable-invoice-container {
+                    width: 100% !important;
+                    max-width: none !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    box-shadow: none !important;
+                    background: white !important;
+                }
+            }
+            
+            .printable-invoice-container {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0 auto;
+                background: white;
+                box-sizing: border-box;
+            }
+        `}</style>
+        
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 no-print">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
+            <div className="p-4 border-b flex justify-between items-center flex-shrink-0">
+                <h3 className="text-lg font-bold text-gray-900">Pratinjau Invoice</h3>
+                <div className="flex gap-2">
+                    <button
+                        onClick={handlePrint}
+                        className="flex items-center bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                        <PrintIcon className="mr-2 h-4 w-4" />
+                        Print
+                    </button>
+                     <button
+                        onClick={handleDownloadPDF}
+                        disabled={isDownloading}
+                        className="flex items-center bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    >
+                        {isDownloading ? (
+                            <>
+                            <SpinnerIcon className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                            Mengunduh...
+                            </>
+                        ) : (
+                            <>
+                            <DownloadIcon className="mr-2 h-4 w-4" />
+                            Download PDF
+                            </>
+                        )}
+                    </button>
+                     <button 
+                        onClick={onClose} 
+                        className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                     >
+                        <CloseIcon className="w-6 h-6" />
+                     </button>
+                </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto bg-gray-100 p-4">
+                <div 
+                    id="printable-invoice-area" 
+                    className="printable-invoice-container bg-white shadow-lg mx-auto"
+                    style={{
+                        width: '210mm',
+                        minHeight: '297mm',
+                        padding: '15mm',
+                        boxSizing: 'border-box',
+                        fontFamily: 'Arial, sans-serif',
+                        fontSize: '12px',
+                        lineHeight: '1.4',
+                        color: '#333'
+                    }}
                 >
-                    {isDownloading ? (
-                        <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Mengunduh...
-                        </>
-                    ) : (
-                        <>
-                        <DownloadIcon className="mr-2 h-4 w-4" />
-                        Download
-                        </>
-                    )}
-                </button>
-                 <button onClick={onClose} className="text-gray-400 hover:text-gray-600 inline-flex items-center justify-center p-1 align-middle">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                 </button>
-            </div>
-        </div>
-        <div className="p-2 max-h-[80vh] overflow-y-auto bg-gray-200" >
-            <div id="printable-invoice-area" className="bg-white p-10 mx-auto max-w-3xl text-gray-800 font-['Arial'] text-sm">
-                {/* Header */}
-                <div className="flex justify-between items-start pb-4 border-b-2 border-black">
-                    <div className="flex items-center">
-                        <img src="https://res.cloudinary.com/dnci7vkv4/image/upload/v1756788264/logo-kdmp_e0gttt.png" alt="KDMP Logo" className="h-16 mr-4" />
-                        <div className="leading-tight">
-                            <h1 className="text-base font-bold mb-1">KDMP PENFUI TIMUR</h1>
-                            <p className="text-[10px]">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
-                            <p className="text-[10px]">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
-                            <p className="text-[10px]">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
+                    {/* Header */}
+                    <div className="flex justify-between items-start pb-4 mb-6 border-b-2 border-black invoice-header no-break">
+                        <div className="flex items-start">
+                            <img 
+                                src="https://res.cloudinary.com/dnci7vkv4/image/upload/v1756788264/logo-kdmp_e0gttt.png" 
+                                alt="KDMP Logo" 
+                                className="h-16 mr-4 flex-shrink-0" 
+                                style={{ maxWidth: '64px', height: 'auto' }}
+                            />
+                            <div className="leading-tight">
+                                <h1 className="text-base font-bold mb-1">KDMP PENFUI TIMUR</h1>
+                                <p className="text-xs mb-1">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
+                                <p className="text-xs mb-1">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
+                                <p className="text-xs">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
+                            </div>
+                        </div>
+                        <div className="bg-gray-100 px-6 py-3 rounded-md flex-shrink-0">
+                            <h2 className="text-2xl font-serif font-bold tracking-widest">INVOICE</h2>
                         </div>
                     </div>
-                    <div className="bg-gray-100 px-6 py-2 rounded-md">
-                        <h2 className="text-2xl font-serif font-bold tracking-widest">INVOICE</h2>
-                    </div>
-                </div>
 
-                {/* Recipient & Details */}
-                <div className="flex justify-between mt-6">
-                    <div className="text-xs">
-                        <p>Kepada Yth.</p>
-                        <p className="font-semibold text-sm">{sppg.name}</p>
-                        <p>{sppg.address}</p>
-                    </div>
-                    <div>
-                        <table className="text-left text-[10px]">
-                            <tbody>
-                                <tr><td className="font-semibold pr-2">Invoice No</td><td className="px-1">:</td><td>{invoice.invoiceNumber}</td></tr>
-                                <tr><td className="font-semibold pr-2">Tanggal</td><td className="px-1">:</td><td>{new Date(invoice.issueDate).toLocaleDateString('id-ID')}</td></tr>
-                                <tr className="h-1"><td colSpan={3}></td></tr>
-                                <tr><td className="font-semibold pr-2" colSpan={3}>Berdasarkan:</td></tr>
-                                <tr><td className="font-semibold pr-2">BAST No</td><td className="px-1">:</td><td>{distribution.bastNumber}</td></tr>
-                                <tr><td className="font-semibold pr-2">Tanggal</td><td className="px-1">:</td><td>{new Date(distribution.distributionDate).toLocaleDateString('id-ID')}</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Items Table */}
-                <div className="mt-6">
-                    <table className="w-full">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="p-2 font-semibold text-[9px] uppercase tracking-wider text-center">No</th>
-                                <th className="p-2 font-semibold text-[9px] uppercase tracking-wider text-left">Deskripsi Produk</th>
-                                <th className="p-2 font-semibold text-[9px] uppercase tracking-wider text-center">Satuan</th>
-                                <th className="p-2 font-semibold text-[9px] uppercase tracking-wider text-center">Jumlah</th>
-                                <th className="p-2 font-semibold text-[9px] uppercase tracking-wider text-right">Harga Satuan (Rp)</th>
-                                <th className="p-2 font-semibold text-[9px] uppercase tracking-wider text-right">Total Harga (Rp)</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 text-xs">
-                            <tr>
-                                <td className="p-2 text-center align-top h-24">1</td>
-                                <td className="p-2 align-top">
-                                    Susu Milk Pro
-                                    <br />
-                                    <span className="text-gray-600 text-[10px]">Kemasan: Dus, Isi: {BOTTLES_PER_CARTON} pcs/dus</span>
-                                </td>
-                                <td className="p-2 text-center align-top">Dus</td>
-                                <td className="p-2 text-center align-top">{distribution.cartons}</td>
-                                <td className="p-2 text-right align-top">{SELLING_PRICE_PER_CARTON.toLocaleString('id-ID')}</td>
-                                <td className="p-2 text-right align-top">{invoice.amount.toLocaleString('id-ID')}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Totals & Terbilang */}
-                <div className="mt-2 pt-2 border-t border-gray-200">
-                    <div className="flex justify-between items-start">
-                        <div className="w-3/5">
-                           <p className="text-[10px]"><span className="font-bold">Terbilang:</span> <span className="italic">{numberToWords(invoice.amount)} Rupiah</span></p>
+                    {/* Recipient & Details */}
+                    <div className="flex justify-between mb-6 no-break">
+                        <div className="text-xs flex-1">
+                            <p className="mb-1">Kepada Yth.</p>
+                            <p className="font-semibold text-sm mb-1">{sppgData.name}</p>
+                            <p>{sppgData.address}</p>
                         </div>
-                        <div className="w-2/5 text-right">
-                           <div className="bg-gray-100 p-3 rounded">
-                               <span className="font-bold text-base">TOTAL TAGIHAN : Rp {invoice.amount.toLocaleString('id-ID')}</span>
-                           </div>
+                        <div className="flex-shrink-0 ml-4">
+                            <table className="text-xs">
+                                <tbody>
+                                    <tr><td className="font-semibold pr-3 py-1">Invoice No</td><td className="px-2">:</td><td>{invoiceData.invoiceNumber}</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-1">Tanggal</td><td className="px-2">:</td><td>{new Date(invoiceData.issueDate).toLocaleDateString('id-ID')}</td></tr>
+                                    <tr className="h-2"><td colSpan={3}></td></tr>
+                                    <tr><td className="font-semibold pr-3 py-1" colSpan={3}>Berdasarkan:</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-1">BAST No</td><td className="px-2">:</td><td>{distributionData.bastNumber}</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-1">Tanggal</td><td className="px-2">:</td><td>{new Date(distributionData.distributionDate).toLocaleDateString('id-ID')}</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
 
-
-                {/* Payment & Signature */}
-                <div className="flex justify-between mt-8 pt-4 border-t border-gray-200">
-                    <div>
-                         <table className="text-[10px]">
+                    {/* Items Table */}
+                    <div className="mb-6 no-break">
+                        <table className="w-full invoice-table" style={{ borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr className="bg-gray-100">
+                                    <th className="p-3 font-semibold text-xs text-center border border-gray-300" style={{ width: '8%' }}>No</th>
+                                    <th className="p-3 font-semibold text-xs text-left border border-gray-300" style={{ width: '35%' }}>Deskripsi Produk</th>
+                                    <th className="p-3 font-semibold text-xs text-center border border-gray-300" style={{ width: '12%' }}>Satuan</th>
+                                    <th className="p-3 font-semibold text-xs text-center border border-gray-300" style={{ width: '12%' }}>Jumlah</th>
+                                    <th className="p-3 font-semibold text-xs text-right border border-gray-300" style={{ width: '16%' }}>Harga Satuan (Rp)</th>
+                                    <th className="p-3 font-semibold text-xs text-right border border-gray-300" style={{ width: '17%' }}>Total Harga (Rp)</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 <tr>
-                                    <td className="font-semibold w-20 align-top">Pembayaran</td>
-                                    <td className="align-top px-1">:</td>
-                                    <td className="align-top">Transfer Bank</td>
-                                </tr>
-                                <tr>
-                                    <td className="font-semibold align-top">Nama</td>
-                                    <td className="align-top px-1">:</td>
-                                    <td className="align-top">KDMP Penfui Timur</td>
-                                </tr>
-                                <tr>
-                                    <td className="font-semibold align-top">Bank</td>
-                                    <td className="align-top px-1">:</td>
-                                    <td className="align-top">Bank NTT</td>
-                                </tr>
-                                <tr>
-                                    <td className="font-semibold align-top">No Rekening</td>
-                                    <td className="align-top px-1">:</td>
-                                    <td className="align-top">001.02.02.123456-7</td>
+                                    <td className="p-3 text-center border border-gray-300 align-top">1</td>
+                                    <td className="p-3 border border-gray-300 align-top">
+                                        <div className="font-medium mb-1">Susu Milk Pro</div>
+                                        <div className="text-gray-600 text-xs">Kemasan: Dus, Isi: {BOTTLES_PER_CARTON} pcs/dus</div>
+                                    </td>
+                                    <td className="p-3 text-center border border-gray-300 align-top">Dus</td>
+                                    <td className="p-3 text-center border border-gray-300 align-top">{distributionData.cartons}</td>
+                                    <td className="p-3 text-right border border-gray-300 align-top">{SELLING_PRICE_PER_CARTON.toLocaleString('id-ID')}</td>
+                                    <td className="p-3 text-right border border-gray-300 align-top font-medium">{invoiceData.amount.toLocaleString('id-ID')}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className="text-center text-xs">
-                        <p>Hormat Kami</p>
-                        <p>KDMP Penfui Timur</p>
-                        <div className="h-16"></div> {/* Spacer for signature */}
-                        <p className="font-bold underline">Susi Maulani</p>
-                        <p>Manajer Distribusi</p>
+
+                    {/* Totals & Terbilang */}
+                    <div className="mb-8 pt-4 border-t border-gray-200 no-break">
+                        <div className="flex justify-between items-start">
+                            <div className="flex-1 pr-4">
+                               <p className="text-xs">
+                                   <span className="font-bold">Terbilang:</span> 
+                                   <span className="italic ml-1">{numberToWords(invoiceData.amount)} Rupiah</span>
+                               </p>
+                            </div>
+                            <div className="flex-shrink-0" style={{ minWidth: '200px' }}>
+                               <div className="bg-gray-100 p-4 rounded text-right">
+                                   <div className="font-bold text-sm">TOTAL TAGIHAN</div>
+                                   <div className="font-bold text-lg mt-1">Rp {invoiceData.amount.toLocaleString('id-ID')}</div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Payment & Signature */}
+                    <div className="flex justify-between mt-auto pt-6 border-t border-gray-200">
+                        <div className="flex-1">
+                             <table className="text-xs">
+                                <tbody>
+                                    <tr>
+                                        <td className="font-semibold pr-4 py-1 align-top" style={{ width: '80px' }}>Pembayaran</td>
+                                        <td className="px-2 py-1 align-top">:</td>
+                                        <td className="py-1 align-top">Transfer Bank</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="font-semibold pr-4 py-1 align-top">Nama</td>
+                                        <td className="px-2 py-1 align-top">:</td>
+                                        <td className="py-1 align-top">KDMP Penfui Timur</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="font-semibold pr-4 py-1 align-top">Bank</td>
+                                        <td className="px-2 py-1 align-top">:</td>
+                                        <td className="py-1 align-top">Bank NTT</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="font-semibold pr-4 py-1 align-top">No Rekening</td>
+                                        <td className="px-2 py-1 align-top">:</td>
+                                        <td className="py-1 align-top">001.02.02.123456-7</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="text-center text-xs flex-shrink-0 ml-8">
+                            <p className="mb-1">Hormat Kami</p>
+                            <p className="mb-1">KDMP Penfui Timur</p>
+                            <div style={{ height: '60px' }}></div> {/* Spacer untuk tanda tangan */}
+                            <p className="font-bold underline mb-1">Susi Maulani</p>
+                            <p>Manajer Distribusi</p>
+                        </div>
                     </div>
                 </div>
             </div>
+          </div>
         </div>
-      </div>
-    </div>
+     </>
   );
 };
 

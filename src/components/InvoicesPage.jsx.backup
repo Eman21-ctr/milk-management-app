@@ -1,16 +1,28 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { InvoiceStatus } from '../constants.js';
+import { useState, useMemo } from 'react';
+import { InvoiceStatus, DistributionStatus, SELLING_PRICE_PER_CARTON } from '../constants.js';
+import Modal from './Modal.jsx';
 import PrintableInvoice from './PrintableInvoice.jsx';
 import { PlusIcon, DownloadIcon } from './icons/Icons.jsx';
 
-const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, coordinators }) => {
-  const navigate = useNavigate();
+const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, addInvoice, coordinators }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [invoiceToPrint, setInvoiceToPrint] = useState(null);
+  const [selectedDist, setSelectedDist] = useState('');
+
+  const availableDistributions = useMemo(() => {
+    return distributions.filter(d => d.status === DistributionStatus.DELIVERED && !d.invoiceId);
+  }, [distributions]);
 
   const handleCreateInvoice = () => {
-    navigate('/invoices/create');
+    const distribution = availableDistributions.find(d => d.id === selectedDist);
+    if (!distribution) {
+      alert("Pilih distribusi yang valid.");
+      return;
+    }
+    addInvoice(distribution);
+    setIsModalOpen(false);
+    setSelectedDist('');
   };
 
   const handlePrintClick = (invoice) => {
@@ -73,10 +85,7 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, coo
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-text-primary">Invoices</h2>
-        <button 
-          onClick={handleCreateInvoice} 
-          className="flex items-center bg-primary hover:bg-primary-light text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-md transition-colors text-sm"
-        >
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center bg-primary hover:bg-primary-light text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-md transition-colors text-sm">
           <PlusIcon className="mr-2 h-4 w-4" />
           Buat Invoice
         </button>
@@ -125,32 +134,51 @@ const InvoicesPage = ({ invoices, updateInvoiceStatus, sppgs, distributions, coo
             </tbody>
           </table>
         </div>
-        
         {/* Mobile View */}
         <div className="md:hidden space-y-3">
             {invoices.map((inv) => <Card key={inv.id} inv={inv} />)}
         </div>
-
-        {/* Empty State */}
-        {invoices.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <p className="text-gray-500 mb-4">Belum ada invoice</p>
-            <button 
-              onClick={handleCreateInvoice}
-              className="bg-primary hover:bg-primary-light text-white font-medium py-2 px-4 rounded-lg transition-colors"
-            >
-              Buat Invoice Pertama
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Print Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Buat Invoice Baru">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="distribution" className="block text-sm font-medium text-gray-700">Pilih Distribusi (Terkirim)</label>
+            <select
+              id="distribution"
+              value={selectedDist}
+              onChange={e => setSelectedDist(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            >
+              <option value="">-- Pilih Surat Jalan --</option>
+              {availableDistributions.map((d) => {
+                const sppg = sppgs.find((k) => k.id === d.sppgId);
+                return (
+                  <option key={d.id} value={d.id}>
+                    {d.suratJalanNumber} - {sppg?.name} ({d.cartons} Kartoon Box)
+                  </option>
+                )
+              })}
+            </select>
+            {availableDistributions.length === 0 && <p className="text-xs text-gray-500 mt-1">Tidak ada distribusi terkirim yang siap dibuatkan invoice.</p>}
+          </div>
+          {selectedDist && (() => {
+            const dist = availableDistributions.find(d => d.id === selectedDist);
+            if (!dist) return null;
+            return (
+               <div>
+                  <p className="text-sm text-gray-500">SPPG: <span className="font-bold">{getSPPGName(dist.sppgId)}</span></p>
+                  <p className="text-sm text-gray-500">Jumlah Tagihan: <span className="font-bold">Rp {(dist.cartons * SELLING_PRICE_PER_CARTON).toLocaleString('id-ID')}</span></p>
+               </div>
+            )
+          })()}
+          <div className="flex justify-end pt-4">
+            <button onClick={() => setIsModalOpen(false)} className="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
+            <button onClick={handleCreateInvoice} disabled={!selectedDist} className="bg-primary hover:bg-primary-light text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-400">Buat Invoice</button>
+          </div>
+        </div>
+      </Modal>
+
       {isPrintModalOpen && invoiceToPrint && (() => {
           const distribution = distributions.find((d) => d.id === invoiceToPrint.distributionId);
           return (

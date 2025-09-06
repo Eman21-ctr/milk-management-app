@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { POStatus } from '../constants.js';
+import React, { useState, useEffect } from 'react';
+import { POStatus, MINIMUM_ORDER_CARTONS, PRICE_PER_BATCH, SUPPLIER_NAME } from '../constants.js';
 import Modal from './Modal.jsx';
 import { PlusIcon, InfoIcon, SwitchHorizontalIcon, TrashIcon } from './icons/Icons.jsx';
 
 const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
+    // Fixed: Initialize allocations as empty object with number values
     const [allocations, setAllocations] = useState({});
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isOpen) {
             setAllocations({});
         }
@@ -19,9 +19,11 @@ const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
     };
 
     const totalAllocated = Object.values(allocations).reduce((sum, val) => sum + val, 0);
+    // Fixed: Cast po.remainingCartons to number to prevent type errors
     const remainingToAllocate = Number(po.remainingCartons) - totalAllocated;
 
     const handleSave = () => {
+        // Fixed: Cast po.remainingCartons to number to prevent type errors
         if (totalAllocated > Number(po.remainingCartons)) {
             alert('Jumlah alokasi melebihi sisa stok PO.');
             return;
@@ -65,21 +67,41 @@ const AllocationModal = ({ isOpen, onClose, po, coordinators, onAllocate }) => {
     );
 };
 
-const PurchaseOrdersPage = ({ 
-  purchaseOrders, 
-  updatePurchaseOrderStatus, 
-  deletePurchaseOrder, 
-  coordinators, 
-  allocationHistory, 
-  allocateStockFromPO 
-}) => {
-  const navigate = useNavigate();
+const PurchaseOrdersPage = ({ purchaseOrders, addPurchaseOrder, updatePurchaseOrderStatus, deletePurchaseOrder, coordinators, allocationHistory, allocateStockFromPO }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isAllocationModalOpen, setIsAllocationModalOpen] = useState(false);
   const [selectedPO, setSelectedPO] = useState(null);
+  
+  const [batches, setBatches] = useState(1);
+  const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
+  const [totalCartons, setTotalCartons] = useState(batches * MINIMUM_ORDER_CARTONS);
+  const [totalPrice, setTotalPrice] = useState(batches * PRICE_PER_BATCH);
+  // Fixed: Initialize status as string (removed TypeScript typing)
+  const [status, setStatus] = useState(POStatus.SENT);
+
+  useEffect(() => {
+    setTotalCartons(batches * MINIMUM_ORDER_CARTONS);
+    setTotalPrice(batches * PRICE_PER_BATCH);
+  }, [batches]);
 
   const handleCreatePO = () => {
-    navigate('/purchase-orders/create');
+    if (batches < 1) {
+      alert("Jumlah batch minimal adalah 1.");
+      return;
+    }
+    addPurchaseOrder({
+      supplier: SUPPLIER_NAME,
+      orderDate: orderDate,
+      batches: batches,
+      totalCartons: totalCartons,
+      totalPrice: totalPrice,
+      status: status,
+    });
+    setIsModalOpen(false);
+    setBatches(1);
+    setStatus(POStatus.SENT);
+    setOrderDate(new Date().toISOString().split('T')[0]);
   };
   
   const handleShowDetails = (po) => {
@@ -169,11 +191,8 @@ const PurchaseOrdersPage = ({
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-text-primary">Purchase Orders</h2>
-        <button 
-          onClick={handleCreatePO} 
-          className="flex items-center bg-primary hover:bg-primary-light text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-md transition-colors text-sm"
-        >
+        <h2 className="text-2xl font-bold text-text-primary">PO</h2>
+        <button onClick={() => setIsModalOpen(true)} className="flex items-center bg-primary hover:bg-primary-light text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-md transition-colors text-sm">
           <PlusIcon className="mr-2 h-4 w-4" />
           Buat PO Baru
         </button>
@@ -229,30 +248,73 @@ const PurchaseOrdersPage = ({
             </tbody>
           </table>
         </div>
-        
         {/* Mobile View */}
         <div className="md:hidden space-y-3">
             {purchaseOrders.map(po => <Card key={po.id} po={po} />)}
         </div>
-
-        {/* Empty State */}
-        {purchaseOrders.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <PlusIcon className="h-12 w-12 mx-auto" />
-            </div>
-            <p className="text-gray-500 mb-4">Belum ada Purchase Order</p>
-            <button 
-              onClick={handleCreatePO}
-              className="bg-primary hover:bg-primary-light text-white font-medium py-2 px-4 rounded-lg transition-colors"
-            >
-              Buat PO Pertama
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Detail Modal */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Buat Purchase Order Baru">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="orderDate" className="block text-sm font-medium text-gray-700">Tanggal Order</label>
+            <input
+              type="date"
+              id="orderDate"
+              value={orderDate}
+              onChange={e => setOrderDate(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="batches" className="block text-sm font-medium text-gray-700">Jumlah Batch</label>
+            <input
+              type="number"
+              id="batches"
+              value={batches}
+              onChange={e => setBatches(parseInt(e.target.value, 10) || 1)}
+              min="1"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="totalCartons" className="block text-sm font-medium text-gray-700">Total Kartoon Box</label>
+            <input
+              type="number"
+              id="totalCartons"
+              value={totalCartons}
+              onChange={e => setTotalCartons(parseInt(e.target.value, 10) || 0)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-gray-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="totalPrice" className="block text-sm font-medium text-gray-700">Total Harga</label>
+            <input
+              type="number"
+              id="totalPrice"
+              value={totalPrice}
+              onChange={e => setTotalPrice(parseInt(e.target.value, 10) || 0)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-gray-50"
+            />
+          </div>
+          <div>
+             <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+             <select 
+                id="status" 
+                value={status} 
+                onChange={e => setStatus(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            >
+                {Object.values(POStatus).map(s => <option key={s} value={s}>{s}</option>)}
+             </select>
+          </div>
+          <div className="flex justify-end pt-4">
+            <button onClick={() => setIsModalOpen(false)} className="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
+            <button onClick={handleCreatePO} className="bg-primary hover:bg-primary-light text-white font-bold py-2 px-4 rounded-lg">Buat PO</button>
+          </div>
+        </div>
+      </Modal>
+      
       {selectedPO && (
          <Modal isOpen={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} title={`Detail Alokasi untuk ${selectedPO.poNumber}`}>
              {(() => {
@@ -285,8 +347,6 @@ const PurchaseOrdersPage = ({
              })()}
          </Modal>
       )}
-
-      {/* Allocation Modal */}
       {selectedPO && (
         <AllocationModal 
             isOpen={isAllocationModalOpen}

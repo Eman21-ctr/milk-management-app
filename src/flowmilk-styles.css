@@ -1,0 +1,832 @@
+/* FLOWMILK Mobile-First Styles */
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+  min-height: 100vh;
+}
+
+/* App Container */
+.flowmilk-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+/* Header Styles */
+.flowmilk-header {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FF6B9D 100%);
+  padding: 20px;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.flowmilk-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flowmilk-header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.flowmilk-logo {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.flowmilk-logo-flow {
+  color: #00F5FF;
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+}
+
+.flowmilk-page-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.flowmilk-back-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flowmilk-back-btn:hover {
+  background: rgba(255,255,255,0.3);
+  transform: scale(1.1);
+}
+
+.flowmilk-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flowmilk-notification-badge {
+  background: #00F5FF;
+  color: #0D1B2A;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.6);
+}
+
+.flowmilk-logout-btn {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flowmilk-logout-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Main Content */
+.flowmilk-main {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px; /* Space for bottom nav */
+}
+
+.flowmilk-dashboard {
+  padding: 20px;
+}
+
+/* Stats Card */
+.flowmilk-stats-card {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FF6B9D 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 25px;
+  position: relative;
+  overflow: hidden;
+}
+
+.flowmilk-stats-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+
+.flowmilk-stats-title {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.flowmilk-stats-amount {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #00F5FF;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+}
+
+.flowmilk-stats-summary {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.flowmilk-stats-item {
+  flex: 1;
+  text-align: center;
+}
+
+.flowmilk-stats-number {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.flowmilk-stats-label {
+  font-size: 12px;
+  opacity: 0.8;
+  line-height: 1.2;
+}
+
+.flowmilk-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.flowmilk-view-all:hover {
+  opacity: 0.8;
+}
+
+/* Search Bar */
+.flowmilk-search-bar {
+  background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+  font-size: 14px;
+  color: #666;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  cursor: text;
+}
+
+.flowmilk-search-bar:hover {
+  border-color: #FF6B6B;
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+}
+
+/* Quick Actions */
+.flowmilk-quick-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.flowmilk-quick-action {
+  flex: 1;
+  background: linear-gradient(135deg, #00F5FF, #0891B2);
+  color: #0D1B2A;
+  padding: 18px 15px;
+  border-radius: 15px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+}
+
+.flowmilk-quick-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+  color: #0D1B2A;
+}
+
+/* Menu Grid */
+.flowmilk-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.flowmilk-menu-item {
+  background: white;
+  border-radius: 18px;
+  padding: 25px 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.flowmilk-menu-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  border-color: rgba(255, 107, 107, 0.3);
+  color: #333;
+}
+
+.flowmilk-menu-item.active {
+  border-color: #FF6B6B;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+.flowmilk-menu-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 16px;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.flowmilk-menu-item:hover .flowmilk-menu-icon {
+  transform: rotate(5deg) scale(1.1);
+}
+
+/* Menu Icon Colors */
+.dashboard { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
+.po { background: linear-gradient(135deg, #4ECDC4, #44A08D); }
+.distribusi { background: linear-gradient(135deg, #667eea, #764ba2); }
+.invoice { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.sppg { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.korwil { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.database { background: linear-gradient(135deg, #fa709a, #fee140); }
+.laporan { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333 !important; }
+
+.flowmilk-menu-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #1a1a1a;
+}
+
+.flowmilk-menu-subtitle {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.flowmilk-notification-dot {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 12px;
+  height: 12px;
+  background: #00F5FF;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 15px #00F5FF, 0 0 25px #00F5FF;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Bottom Navigation */
+.flowmilk-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 480px;
+  width: 100%;
+  background: linear-gradient(135deg, #FFFFFF, #F8F9FA);
+  border-top: 1px solid #E0E0E0;
+  display: flex;
+  padding: 12px 0;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  z-index: 50;
+}
+
+.flowmilk-nav-item {
+  flex: 1;
+  text-align: center;
+  color: #666;
+  text-decoration: none;
+  padding: 8px 0;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.flowmilk-nav-item.active {
+  color: #FF6B6B;
+  font-weight: 700;
+  transform: scale(1.05);
+}
+
+.flowmilk-nav-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.flowmilk-nav-item:hover .flowmilk-nav-icon {
+  transform: scale(1.2);
+}
+
+/* Page Wrapper for other components */
+.flowmilk-page-wrapper {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 140px);
+}
+
+/* Loading Screen */
+.flowmilk-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+  color: white;
+}
+
+.flowmilk-loading-content {
+  text-align: center;
+}
+
+.flowmilk-loading .flowmilk-logo {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .flowmilk-app {
+    max-width: 768px;
+  }
+  
+  .flowmilk-menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .flowmilk-dashboard {
+    padding: 30px;
+  }
+  
+  .flowmilk-page-wrapper {
+    padding: 30px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .flowmilk-app {
+    max-width: 1024px;
+  }
+  
+  .flowmilk-menu-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Animation Classes */
+.flowmilk-fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation for menu items */
+.flowmilk-menu-item:nth-child(1) { animation-delay: 0.1s; }
+.flowmilk-menu-item:nth-child(2) { animation-delay: 0.2s; }
+.flowmilk-menu-item:nth-child(3) { animation-delay: 0.3s; }
+.flowmilk-menu-item:nth-child(4) { animation-delay: 0.4s; }
+.flowmilk-menu-item:nth-child(5) { animation-delay: 0.5s; }
+.flowmilk-menu-item:nth-child(6) { animation-delay: 0.6s; }
+.flowmilk-menu-item:nth-child(7) { animation-delay: 0.7s; }
+.flowmilk-menu-item:nth-child(8) { animation-delay: 0.8s; }
+
+/* Enhanced Button Styles for Forms */
+.flowmilk-btn-primary {
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.flowmilk-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+}
+
+.flowmilk-btn-secondary {
+  background: linear-gradient(135deg, #00F5FF, #0891B2);
+  color: #0D1B2A;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+}
+
+.flowmilk-btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+}
+
+/* Enhanced Card Styles for Content Pages */
+.flowmilk-content-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.flowmilk-content-card:hover {
+  border-color: rgba(255, 107, 107, 0.2);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.flowmilk-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.flowmilk-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* Form Styles */
+.flowmilk-form-group {
+  margin-bottom: 20px;
+}
+
+.flowmilk-form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.flowmilk-form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #f9fafb;
+}
+
+.flowmilk-form-input:focus {
+  outline: none;
+  border-color: #FF6B6B;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.flowmilk-form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #f9fafb;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.flowmilk-form-select:focus {
+  outline: none;
+  border-color: #FF6B6B;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+/* Table Styles for Desktop View */
+.flowmilk-table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.flowmilk-table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+}
+
+.flowmilk-table th {
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  color: white;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.flowmilk-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.flowmilk-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Mobile Card List for Tables */
+.flowmilk-mobile-list {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .flowmilk-table-container {
+    display: none;
+  }
+  
+  .flowmilk-mobile-list {
+    display: block;
+  }
+}
+
+.flowmilk-mobile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-left: 4px solid #FF6B6B;
+}
+
+.flowmilk-mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.flowmilk-mobile-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.flowmilk-mobile-card-status {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.flowmilk-mobile-card-content {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Status Badge Colors */
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-completed { background: #d1fae5; color: #065f46; }
+.status-in-progress { background: #dbeafe; color: #1e40af; }
+.status-cancelled { background: #fee2e2; color: #991b1b; }
+
+/* Toast Notifications */
+.flowmilk-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+  z-index: 1000;
+  transform: translateX(400px);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  max-width: 320px;
+}
+
+.flowmilk-toast.show {
+  transform: translateX(0);
+}
+
+.flowmilk-toast-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.flowmilk-toast-message {
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+/* Floating Action Button */
+.flowmilk-fab {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+  transition: all 0.3s ease;
+  z-index: 40;
+}
+
+.flowmilk-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 35px rgba(255, 107, 107, 0.5);
+}
+
+/* Modal Overlay */
+.flowmilk-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.flowmilk-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.flowmilk-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.flowmilk-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.flowmilk-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.flowmilk-modal-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Loading States */
+.flowmilk-loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 50%;
+  border-top-color: #FF6B6B;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .flowmilk-page-wrapper {
+    background: #1f2937;
+    color: white;
+  }
+  
+  .flowmilk-content-card {
+    background: #374151;
+    color: white;
+  }
+  
+  .flowmilk-form-input,
+  .flowmilk-form-select {
+    background: #4b5563;
+    border-color: #6b7280;
+    color: white;
+  }
+}
