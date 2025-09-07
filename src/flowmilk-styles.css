@@ -1,4 +1,4 @@
-/* FLOWMILK Mobile-First Styles */
+/* FLOWMILK Mobile-First Styles - Blue & White Theme (BRImo Style) */
 
 /* Reset and Base Styles */
 * {
@@ -8,7 +8,7 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
   min-height: 100vh;
 }
 
@@ -25,7 +25,7 @@ body {
 
 /* Header Styles */
 .flowmilk-header {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FF6B9D 100%);
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
   padding: 20px;
   color: white;
   position: sticky;
@@ -52,8 +52,8 @@ body {
 }
 
 .flowmilk-logo-flow {
-  color: #00F5FF;
-  text-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+  color: #E3F2FD;
+  text-shadow: 0 0 20px rgba(227, 242, 253, 0.5);
 }
 
 .flowmilk-page-title {
@@ -89,8 +89,8 @@ body {
 }
 
 .flowmilk-notification-badge {
-  background: #00F5FF;
-  color: #0D1B2A;
+  background: #FF4444;
+  color: white;
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -99,7 +99,7 @@ body {
   justify-content: center;
   font-size: 12px;
   font-weight: bold;
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.6);
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
 }
 
 .flowmilk-logout-btn {
@@ -129,9 +129,9 @@ body {
   padding: 20px;
 }
 
-/* Stats Card */
+/* Stats Card - BRImo Style */
 .flowmilk-stats-card {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FF6B9D 100%);
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 50%, #0D47A1 100%);
   color: white;
   border-radius: 20px;
   padding: 25px;
@@ -161,8 +161,8 @@ body {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #00F5FF;
-  text-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+  color: #E3F2FD;
+  text-shadow: 0 0 10px rgba(227, 242, 253, 0.3);
 }
 
 .flowmilk-stats-summary {
@@ -205,7 +205,7 @@ body {
 
 /* Search Bar */
 .flowmilk-search-bar {
-  background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
+  background: linear-gradient(135deg, #F8F9FA, #E3F2FD);
   border-radius: 12px;
   padding: 15px 20px;
   margin-bottom: 25px;
@@ -217,11 +217,11 @@ body {
 }
 
 .flowmilk-search-bar:hover {
-  border-color: #FF6B6B;
-  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+  border-color: #1976D2;
+  box-shadow: 0 5px 15px rgba(25, 118, 210, 0.2);
 }
 
-/* Quick Actions */
+/* Quick Actions - BRImo Style */
 .flowmilk-quick-actions {
   display: flex;
   gap: 15px;
@@ -230,8 +230,8 @@ body {
 
 .flowmilk-quick-action {
   flex: 1;
-  background: linear-gradient(135deg, #00F5FF, #0891B2);
-  color: #0D1B2A;
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  color: white;
   padding: 18px 15px;
   border-radius: 15px;
   text-align: center;
@@ -239,13 +239,13 @@ body {
   font-weight: 700;
   font-size: 14px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
 
 .flowmilk-quick-action:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
-  color: #0D1B2A;
+  box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+  color: white;
 }
 
 /* Menu Grid */
@@ -272,13 +272,13 @@ body {
 .flowmilk-menu-item:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-  border-color: rgba(255, 107, 107, 0.3);
+  border-color: rgba(25, 118, 210, 0.3);
   color: #333;
 }
 
 .flowmilk-menu-item.active {
-  border-color: #FF6B6B;
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+  border-color: #1976D2;
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.3);
 }
 
 .flowmilk-menu-icon {
@@ -300,15 +300,15 @@ body {
   transform: rotate(5deg) scale(1.1);
 }
 
-/* Menu Icon Colors */
-.dashboard { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
-.po { background: linear-gradient(135deg, #4ECDC4, #44A08D); }
-.distribusi { background: linear-gradient(135deg, #667eea, #764ba2); }
-.invoice { background: linear-gradient(135deg, #f093fb, #f5576c); }
-.sppg { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-.korwil { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-.database { background: linear-gradient(135deg, #fa709a, #fee140); }
-.laporan { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333 !important; }
+/* Menu Icon Colors - Blue Variations */
+.dashboard { background: linear-gradient(135deg, #1976D2, #1565C0); }
+.po { background: linear-gradient(135deg, #2196F3, #1976D2); }
+.distribusi { background: linear-gradient(135deg, #42A5F5, #2196F3); }
+.invoice { background: linear-gradient(135deg, #64B5F6, #42A5F5); }
+.sppg { background: linear-gradient(135deg, #90CAF9, #64B5F6); color: #0D47A1 !important; }
+.korwil { background: linear-gradient(135deg, #0277BD, #01579B); }
+.database { background: linear-gradient(135deg, #0288D1, #0277BD); }
+.laporan { background: linear-gradient(135deg, #BBDEFB, #E3F2FD); color: #0D47A1 !important; }
 
 .flowmilk-menu-title {
   font-size: 15px;
@@ -329,10 +329,10 @@ body {
   right: 15px;
   width: 12px;
   height: 12px;
-  background: #00F5FF;
+  background: #FF4444;
   border-radius: 50%;
   animation: pulse 2s infinite;
-  box-shadow: 0 0 15px #00F5FF, 0 0 25px #00F5FF;
+  box-shadow: 0 0 15px #FF4444, 0 0 25px #FF4444;
 }
 
 @keyframes pulse {
@@ -369,7 +369,7 @@ body {
 }
 
 .flowmilk-nav-item.active {
-  color: #FF6B6B;
+  color: #1976D2;
   font-weight: 700;
   transform: scale(1.05);
 }
@@ -398,7 +398,7 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 50%, #415A77 100%);
+  background: linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #1976D2 100%);
   color: white;
 }
 
@@ -467,9 +467,9 @@ body {
 .flowmilk-menu-item:nth-child(7) { animation-delay: 0.7s; }
 .flowmilk-menu-item:nth-child(8) { animation-delay: 0.8s; }
 
-/* Enhanced Button Styles for Forms */
+/* Enhanced Button Styles for Forms - Blue Theme */
 .flowmilk-btn-primary {
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  background: linear-gradient(135deg, #1976D2, #1565C0);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -478,17 +478,17 @@ body {
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
 }
 
 .flowmilk-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
 }
 
 .flowmilk-btn-secondary {
-  background: linear-gradient(135deg, #00F5FF, #0891B2);
-  color: #0D1B2A;
+  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  color: #0D47A1;
   border: none;
   padding: 12px 24px;
   border-radius: 12px;
@@ -496,12 +496,12 @@ body {
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(227, 242, 253, 0.3);
 }
 
 .flowmilk-btn-secondary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 245, 255, 0.4);
+  box-shadow: 0 8px 25px rgba(227, 242, 253, 0.4);
 }
 
 /* Enhanced Card Styles for Content Pages */
@@ -516,7 +516,7 @@ body {
 }
 
 .flowmilk-content-card:hover {
-  border-color: rgba(255, 107, 107, 0.2);
+  border-color: rgba(25, 118, 210, 0.2);
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
@@ -561,9 +561,9 @@ body {
 
 .flowmilk-form-input:focus {
   outline: none;
-  border-color: #FF6B6B;
+  border-color: #1976D2;
   background: white;
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
 .flowmilk-form-select {
@@ -584,9 +584,9 @@ body {
 
 .flowmilk-form-select:focus {
   outline: none;
-  border-color: #FF6B6B;
+  border-color: #1976D2;
   background-color: white;
-  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
 /* Table Styles for Desktop View */
@@ -604,7 +604,7 @@ body {
 }
 
 .flowmilk-table th {
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  background: linear-gradient(135deg, #1976D2, #1565C0);
   color: white;
   padding: 15px 12px;
   text-align: left;
@@ -643,7 +643,7 @@ body {
   padding: 16px;
   margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border-left: 4px solid #FF6B6B;
+  border-left: 4px solid #1976D2;
 }
 
 .flowmilk-mobile-card-header {
@@ -672,22 +672,22 @@ body {
   line-height: 1.5;
 }
 
-/* Status Badge Colors */
-.status-pending { background: #fef3c7; color: #92400e; }
-.status-completed { background: #d1fae5; color: #065f46; }
-.status-in-progress { background: #dbeafe; color: #1e40af; }
-.status-cancelled { background: #fee2e2; color: #991b1b; }
+/* Status Badge Colors - Blue Theme */
+.status-pending { background: #E3F2FD; color: #0D47A1; }
+.status-completed { background: #C8E6C9; color: #1B5E20; }
+.status-in-progress { background: #BBDEFB; color: #0D47A1; }
+.status-cancelled { background: #FFCDD2; color: #C62828; }
 
 /* Toast Notifications */
 .flowmilk-toast {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  background: linear-gradient(135deg, #1976D2, #1565C0);
   color: white;
   padding: 16px 20px;
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.3);
   z-index: 1000;
   transform: translateX(400px);
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -717,20 +717,20 @@ body {
   right: 20px;
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+  background: linear-gradient(135deg, #1976D2, #1565C0);
   border: none;
   border-radius: 50%;
   color: white;
   font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+  box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
   transition: all 0.3s ease;
   z-index: 40;
 }
 
 .flowmilk-fab:hover {
   transform: scale(1.1);
-  box-shadow: 0 12px 35px rgba(255, 107, 107, 0.5);
+  box-shadow: 0 12px 35px rgba(25, 118, 210, 0.5);
 }
 
 /* Modal Overlay */
@@ -803,7 +803,7 @@ body {
   height: 20px;
   border: 2px solid #e5e7eb;
   border-radius: 50%;
-  border-top-color: #FF6B6B;
+  border-top-color: #1976D2;
   animation: spin 1s ease-in-out infinite;
 }
 
