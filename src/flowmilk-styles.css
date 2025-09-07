@@ -830,3 +830,99 @@ body {
     color: white;
   }
 }
+
+/* Reports Page Styles */
+.flowmilk-reports-page {
+  padding: 20px;
+}
+
+.flowmilk-reports-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.flowmilk-reports-header h2 {
+  color: #2563eb;
+  margin-bottom: 8px;
+}
+
+.flowmilk-reports-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.flowmilk-date-range {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.flowmilk-date-input {
+  flex: 1;
+}
+
+.flowmilk-date-input label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.flowmilk-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.flowmilk-download-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.flowmilk-download-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.flowmilk-report-preview {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.flowmilk-report-preview h3 {
+  margin-bottom: 15px;
+  color: #1f2937;
+}
+
+.flowmilk-stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.flowmilk-stat-item:last-child {
+  border-bottom: none;
+}
+
+.flowmilk-stat-label {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.flowmilk-stat-value {
+  font-weight: 600;
+  color: #1f2937;
+}

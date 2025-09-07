@@ -13,6 +13,9 @@ import InvoicesPage from './components/InvoicesPage.jsx';
 import SPPGsPage from './components/KitchensPage.jsx';
 import CoordinatorsPage from './components/CoordinatorsPage.jsx';
 import DatabasePage from './components/DatabasePage.jsx';
+import ReportsPage from './components/ReportsPage.jsx';
+// Import LaporanPage jika sudah ada, atau buat yang baru. Saya asumsikan ada.
+// import ReportsPage from './components/ReportsPage.jsx'; // <--- Tambahkan ini jika Anda punya komponen ReportsPage
 import { SELLING_PRICE_PER_CARTON } from './constants.js';
 import './flowmilk-styles.css'; // New CSS file for FLOWMILK styling
 import DistributionForm from './components/forms/DistributionForm.jsx';
@@ -321,7 +324,7 @@ const App = () => {
       try {
           await updateDoc(distRef, { status });
           setDistributions(prev => prev.map(dist => dist.id === distId ? { ...dist, status } : dist));
-      } catch(e) { console.error("Error updating distribution: ", e); }
+      } catch(e) { console.error("Error updating distribution:", e); }
     };
 
   const availableStock = coordinators.reduce((acc, c) => acc + c.stock, 0);
@@ -348,6 +351,8 @@ const App = () => {
       if (path.startsWith('/sppgs')) return { title: 'SPPG', showBack: true };
       if (path.startsWith('/coordinators')) return { title: 'Korwil', showBack: true };
       if (path.startsWith('/database')) return { title: 'Database', showBack: true };
+      // Tambahkan rute untuk Laporan jika ada
+      if (path.startsWith('/reports')) return { title: 'Laporan', showBack: true };
       return { title: 'FLOWMILK', showBack: false };
     };
 
@@ -407,7 +412,9 @@ const App = () => {
               <div className="flowmilk-stats-label">PO Pending</div>
             </div>
           </div>
-          <NavLink to="/database" className="flowmilk-view-all">
+          {/* Ubah link ini agar tidak mengarah ke Database, tapi bisa ke dashboard/overview stok atau hapus saja jika tidak relevan */}
+          {/* <NavLink to="/database" className="flowmilk-view-all"> */}
+          <NavLink to="/" className="flowmilk-view-all"> {/* Mengarah ke dashboard utama atau bisa disesuaikan */}
             Detail Stok per Gudang
             <span>→</span>
           </NavLink>
@@ -421,7 +428,9 @@ const App = () => {
         {/* Quick Actions - Update ke 3 actions yang route langsung ke form */}
 <div className="flowmilk-quick-actions">
   <NavLink to="/distributions/create" className="flowmilk-quick-action">
-    📦 Buat Distribusi
+    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M12,2L2,7V17L12,22L22,17V7L12,2M12,4.14L17.53,7L12,9.86L6.47,7L12,4.14M4,8.86L11,12.74V19.26L4,15.38V8.86M13,19.26V12.74L20,8.86V15.38L13,19.26Z"/>
+</svg> Buat Distribusi
   </NavLink>
   <NavLink to="/purchase-orders/create" className="flowmilk-quick-action">
     📋 PO Baru
@@ -431,7 +440,7 @@ const App = () => {
   </NavLink>
 </div>
 
-        {/* Menu Grid */}
+        {/* Menu Grid - Hapus Database dan Laporan */}
         <div className="flowmilk-menu-grid">
           <NavLink to="/" className="flowmilk-menu-item">
             <div className="flowmilk-menu-icon dashboard">📊</div>
@@ -472,40 +481,27 @@ const App = () => {
             <div className="flowmilk-menu-subtitle">Koordinator Wilayah</div>
           </NavLink>
 
-          <NavLink to="/database" className="flowmilk-menu-item">
-            <div className="flowmilk-menu-icon database">💾</div>
-            <div className="flowmilk-menu-title">Database</div>
-            <div className="flowmilk-menu-subtitle">Pusat Data</div>
-          </NavLink>
-
-          <NavLink to="/database" className="flowmilk-menu-item">
-            <div className="flowmilk-menu-icon laporan">📈</div>
-            <div className="flowmilk-menu-title">Laporan</div>
-            <div className="flowmilk-menu-subtitle">Keuangan & Analytics</div>
-          </NavLink>
+          {/* Hapus NavLink ke /database */}
+          {/* Hapus NavLink ke /reports (sebelumnya ada di /database) */}
         </div>
       </div>
     );
   };
 
-  // Bottom Navigation
+  // Bottom Navigation - Hanya HOME, DATABASE, LAPORAN
   const BottomNavigation = () => (
     <nav className="flowmilk-bottom-nav">
       <NavLink to="/" className={({ isActive }) => `flowmilk-nav-item ${isActive ? 'active' : ''}`}>
         <span className="flowmilk-nav-icon">🏠</span>
         Home
       </NavLink>
-      <NavLink to="/" className="flowmilk-nav-item">
-        <span className="flowmilk-nav-icon">📊</span>
-        Dashboard
-      </NavLink>
-      <NavLink to="/distributions" className="flowmilk-nav-item">
-        <span className="flowmilk-nav-icon">🚛</span>
-        Distribusi
-      </NavLink>
-      <NavLink to="/database" className="flowmilk-nav-item">
+      <NavLink to="/database" className={({ isActive }) => `flowmilk-nav-item ${isActive ? 'active' : ''}`}>
         <span className="flowmilk-nav-icon">💾</span>
         Database
+      </NavLink>
+      <NavLink to="/reports" className={({ isActive }) => `flowmilk-nav-item ${isActive ? 'active' : ''}`}> {/* Ubah /database menjadi /reports */}
+        <span className="flowmilk-nav-icon">📈</span>
+        Laporan
       </NavLink>
     </nav>
   );
@@ -533,99 +529,111 @@ const App = () => {
         <MobileHeader />
         <main className="flowmilk-main">
           <Routes>
-  <Route path="/" element={<MobileDashboard />} />
-  <Route path="/purchase-orders" element={
-    <div className="flowmilk-page-wrapper">
-      <PurchaseOrdersPage 
-        purchaseOrders={purchaseOrders}
-        addPurchaseOrder={addPurchaseOrder}
-        updatePurchaseOrderStatus={updatePurchaseOrderStatus}
-        deletePurchaseOrder={deletePurchaseOrder}
-        allocationHistory={allocationHistory}
-        coordinators={coordinators}
-        allocateStockFromPO={allocateStockFromPO}
-      />
-    </div>
-  } />
-  <Route path="/distributions" element={
-    <div className="flowmilk-page-wrapper">
-      <DistributionsPage
-        distributions={distributions}
-        sppgs={sppgs}
-        coordinators={coordinators}
-        updateDistributionStatus={updateDistributionStatus}
-      />
-    </div>
-  } />
-  {/* NEW ROUTE: Distribution Form */}
-  <Route path="/distributions/create" element={
-    <div className="flowmilk-page-wrapper">
-      <DistributionForm
-        distributions={distributions}
-        addDistribution={addDistribution}
-        sppgs={sppgs}
-        coordinators={coordinators}
-        updateDistributionStatus={updateDistributionStatus}
-      />
-    </div>
-  } />
-  <Route path="/invoices" element={
-    <div className="flowmilk-page-wrapper">
-      <InvoicesPage
-        invoices={invoices}
-        updateInvoiceStatus={updateInvoiceStatus}
-        sppgs={sppgs}
-        distributions={distributions}
-        addInvoice={addInvoice}
-        coordinators={coordinators}
-      />
-    </div>
-  } />
-  <Route path="/sppgs" element={
-    <div className="flowmilk-page-wrapper">
-      <SPPGsPage sppgs={sppgs} updateSPPG={updateSPPG} addSPPG={addSPPG} />
-    </div>
-  } />
-  <Route path="/coordinators" element={
-    <div className="flowmilk-page-wrapper">
-      <CoordinatorsPage
-        coordinators={coordinators}
-        sppgs={sppgs}
-        updateCoordinator={updateCoordinator}
-        addCoordinator={addCoordinator}
-      />
-    </div>
-  } />
-  <Route path="/database" element={
-    <div className="flowmilk-page-wrapper">
-      <DatabasePage
-        purchaseOrders={purchaseOrders}
-        distributions={distributions}
-        invoices={invoices}
-        sppgs={sppgs}
-        coordinators={coordinators}
-      />
-    </div>
-  } />
-  <Route 
-  path="/purchase-orders/create" 
-  element={
-    <PurchaseOrderForm 
-      addPurchaseOrder={addPurchaseOrder}
-    />
-  } 
-/>
-<Route 
-  path="/invoices/create" 
-  element={
-    <InvoiceForm 
-      addInvoice={addInvoice}
-      sppgs={sppgs}
+            <Route path="/" element={<MobileDashboard />} />
+            <Route path="/purchase-orders" element={
+              <div className="flowmilk-page-wrapper">
+                <PurchaseOrdersPage 
+                  purchaseOrders={purchaseOrders}
+                  addPurchaseOrder={addPurchaseOrder}
+                  updatePurchaseOrderStatus={updatePurchaseOrderStatus}
+                  deletePurchaseOrder={deletePurchaseOrder}
+                  allocationHistory={allocationHistory}
+                  coordinators={coordinators}
+                  allocateStockFromPO={allocateStockFromPO}
+                />
+              </div>
+            } />
+            <Route path="/distributions" element={
+              <div className="flowmilk-page-wrapper">
+                <DistributionsPage
+                  distributions={distributions}
+                  sppgs={sppgs}
+                  coordinators={coordinators}
+                  updateDistributionStatus={updateDistributionStatus}
+                />
+              </div>
+            } />
+            {/* NEW ROUTE: Distribution Form */}
+            <Route path="/distributions/create" element={
+              <div className="flowmilk-page-wrapper">
+                <DistributionForm
+                  distributions={distributions}
+                  addDistribution={addDistribution}
+                  sppgs={sppgs}
+                  coordinators={coordinators}
+                  updateDistributionStatus={updateDistributionStatus}
+                />
+              </div>
+            } />
+            <Route path="/invoices" element={
+              <div className="flowmilk-page-wrapper">
+                <InvoicesPage
+                  invoices={invoices}
+                  updateInvoiceStatus={updateInvoiceStatus}
+                  sppgs={sppgs}
+                  distributions={distributions}
+                  addInvoice={addInvoice}
+                  coordinators={coordinators}
+                />
+              </div>
+            } />
+            <Route path="/sppgs" element={
+              <div className="flowmilk-page-wrapper">
+                <SPPGsPage sppgs={sppgs} updateSPPG={updateSPPG} addSPPG={addSPPG} />
+              </div>
+            } />
+            <Route path="/coordinators" element={
+              <div className="flowmilk-page-wrapper">
+                <CoordinatorsPage
+                  coordinators={coordinators}
+                  sppgs={sppgs}
+                  updateCoordinator={updateCoordinator}
+                  addCoordinator={addCoordinator}
+                />
+              </div>
+            } />
+            <Route path="/database" element={
+              <div className="flowmilk-page-wrapper">
+                <DatabasePage
+                  purchaseOrders={purchaseOrders}
+                  distributions={distributions}
+                  invoices={invoices}
+                  sppgs={sppgs}
+                  coordinators={coordinators}
+                />
+              </div>
+            } />
+            {/* Tambahkan rute untuk Laporan. Asumsi Anda memiliki komponen ReportsPage */}
+            <Route path="/reports" element={
+  <div className="flowmilk-page-wrapper">
+    <ReportsPage
+      purchaseOrders={purchaseOrders}
       distributions={distributions}
+      invoices={invoices}
+      sppgs={sppgs}
+      coordinators={coordinators}
     />
-  } 
-/>
-</Routes>
+  </div>
+} />
+            <Route 
+              path="/purchase-orders/create" 
+              element={
+                <PurchaseOrderForm 
+                  addPurchaseOrder={addPurchaseOrder}
+                />
+              } 
+            />
+            <Route 
+              path="/invoices/create" 
+              element={
+                <InvoiceForm 
+                  addInvoice={addInvoice}
+                  sppgs={sppgs}
+                  distributions={distributions}
+                />
+              } 
+            />
+          </Routes>
         </main>
         <BottomNavigation />
       </div>

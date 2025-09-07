@@ -64,11 +64,10 @@ const DistributionsPage = ({ distributions, sppgs, coordinators, updateDistribut
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-text-primary">Distribusi Susu</h2>
         <button 
-          onClick={() => navigate('/distributions/create')} 
-          className="flex items-center bg-primary hover:bg-primary-light text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-md transition-colors text-sm"
-        >
+  onClick={() => navigate('/distributions/create')} 
+  className="flex items-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-md transition-all duration-200 text-sm"
+>
           <PlusIcon className="mr-2 h-4 w-4" />
           Buat Distribusi
         </button>
