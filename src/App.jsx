@@ -428,9 +428,7 @@ const App = () => {
         {/* Quick Actions - Update ke 3 actions yang route langsung ke form */}
 <div className="flowmilk-quick-actions">
   <NavLink to="/distributions/create" className="flowmilk-quick-action">
-    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-  <path d="M12,2L2,7V17L12,22L22,17V7L12,2M12,4.14L17.53,7L12,9.86L6.47,7L12,4.14M4,8.86L11,12.74V19.26L4,15.38V8.86M13,19.26V12.74L20,8.86V15.38L13,19.26Z"/>
-</svg> Buat Distribusi
+    📦 Buat Distribusi
   </NavLink>
   <NavLink to="/purchase-orders/create" className="flowmilk-quick-action">
     📋 PO Baru
