@@ -224,7 +224,7 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
   return (
     <>
       {/* Print-specific CSS styles - same approach as PrintableInvoice */}
-      <style jsx>{`
+      <style>{`
           @media print {
               @page {
                   size: A4;
@@ -258,7 +258,7 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
           }
       `}</style>
 
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 no-print">
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-[200] flex justify-center items-center p-4 no-print">
         <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
           <div className="p-4 border-b flex justify-between items-center flex-shrink-0">
               <h3 className="text-lg font-bold text-gray-900">Pratinjau {title}</h3>
@@ -321,15 +321,15 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
                         style={{ maxWidth: '64px', height: 'auto' }}
                       />
                       <div className="leading-tight">
-                          <h1 className="text-base font-bold mb-1">KDMP PENFUI TIMUR</h1>
-                          <p className="text-xs mb-1">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
-                          <p className="text-xs mb-1">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
-                          <p className="text-xs">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
+                          <h1 className="text-base font-bold mb-0.5">KDMP PENFUI TIMUR</h1>
+                          <p className="text-[10px] mb-0.5">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
+                          <p className="text-[10px] mb-0.5">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
+                          <p className="text-[10px]">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
                       </div>
                     </div>
-                    <div className="text-center mt-6">
+                    <div className="text-center mt-4">
                           <h2 className="text-xl font-bold uppercase underline">{title}</h2>
-                          <p className="text-sm text-gray-600 mt-2">Nomor: {docNumber}</p>
+                          <p className="text-sm text-gray-600 mt-1">Nomor: {docNumber}</p>
                     </div>
                 </div>
 

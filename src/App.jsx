@@ -95,7 +95,7 @@ const App = () => {
     const addPurchaseOrder = async (po) => {
       const newPOData = {
         ...po,
-        poNumber: `PO-KDMP-${Date.now()}`,
+        poNumber: `PO-KDMP-PT-${Date.now()}`,
         remainingCartons: po.totalCartons,
         createdAt: Timestamp.now().toDate().toISOString(),
       };
@@ -230,8 +230,8 @@ const App = () => {
       const now = new Date();
       const newDistData = {
           ...dist,
-          suratJalanNumber: `KDMP/SJ/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(distributions.length + 1).padStart(3, '0')}`,
-          bastNumber: `KDMP/BAST/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(distributions.length + 1).padStart(3, '0')}`,
+          suratJalanNumber: `KDMP-PT/SJ/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(distributions.length + 1).padStart(3, '0')}`,
+          bastNumber: `KDMP-PT/BAST/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(distributions.length + 1).padStart(3, '0')}`,
           createdAt: Timestamp.now().toDate().toISOString(),
       };
   
@@ -255,7 +255,7 @@ const App = () => {
       const batch = writeBatch(db);
       const now = new Date();
       const newInvoiceData = {
-          invoiceNumber: `KDMP/INV/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(invoices.length + 1).padStart(3, '0')}`,
+          invoiceNumber: `KDMP-PT/INV/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(invoices.length + 1).padStart(3, '0')}`,
           distributionId: dist.id,
           sppgId: dist.sppgId,
           issueDate: now.toISOString().split('T')[0],

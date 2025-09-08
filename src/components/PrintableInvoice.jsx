@@ -275,7 +275,7 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
   return (
      <>
         {/* Print-specific CSS styles */}
-        <style jsx>{`
+        <style>{`
             @media print {
                 @page {
                     size: A4;
@@ -309,7 +309,7 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
             }
         `}</style>
         
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 no-print">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-[200] flex justify-center items-center p-4 no-print">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl max-h-[90vh] flex flex-col">
             <div className="p-4 border-b flex justify-between items-center flex-shrink-0">
                 <h3 className="text-lg font-bold text-gray-900">Pratinjau Invoice</h3>
@@ -372,10 +372,10 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                                 style={{ maxWidth: '64px', height: 'auto' }}
                             />
                             <div className="leading-tight">
-                                <h1 className="text-base font-bold mb-1">KDMP PENFUI TIMUR</h1>
-                                <p className="text-xs mb-1">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
-                                <p className="text-xs mb-1">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
-                                <p className="text-xs">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
+                                <h1 className="text-base font-bold mb-0.5">KDMP PENFUI TIMUR</h1>
+                                <p className="text-[10px] mb-0.5">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
+                                <p className="text-[10px] mb-0.5">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
+                                <p className="text-[10px]">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
                             </div>
                         </div>
                         <div className="bg-gray-100 px-6 py-3 rounded-md flex-shrink-0">
@@ -391,14 +391,14 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                             <p>{sppgData.address}</p>
                         </div>
                         <div className="flex-shrink-0 ml-4">
-                            <table className="text-xs">
+                            <table className="text-xs leading-tight">
                                 <tbody>
-                                    <tr><td className="font-semibold pr-3 py-1">Invoice No</td><td className="px-2">:</td><td>{invoiceData.invoiceNumber}</td></tr>
-                                    <tr><td className="font-semibold pr-3 py-1">Tanggal</td><td className="px-2">:</td><td>{new Date(invoiceData.issueDate).toLocaleDateString('id-ID')}</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-0.5">Invoice No</td><td className="px-2">:</td><td>{invoiceData.invoiceNumber}</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-0.5">Tanggal</td><td className="px-2">:</td><td>{new Date(invoiceData.issueDate).toLocaleDateString('id-ID')}</td></tr>
                                     <tr className="h-2"><td colSpan={3}></td></tr>
-                                    <tr><td className="font-semibold pr-3 py-1" colSpan={3}>Berdasarkan:</td></tr>
-                                    <tr><td className="font-semibold pr-3 py-1">BAST No</td><td className="px-2">:</td><td>{distributionData.bastNumber}</td></tr>
-                                    <tr><td className="font-semibold pr-3 py-1">Tanggal</td><td className="px-2">:</td><td>{new Date(distributionData.distributionDate).toLocaleDateString('id-ID')}</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-0.5" colSpan={3}>Berdasarkan:</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-0.5">BAST No</td><td className="px-2">:</td><td>{distributionData.bastNumber}</td></tr>
+                                    <tr><td className="font-semibold pr-3 py-0.5">Tanggal</td><td className="px-2">:</td><td>{new Date(distributionData.distributionDate).toLocaleDateString('id-ID')}</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -444,8 +444,7 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                             </div>
                             <div className="flex-shrink-0" style={{ minWidth: '200px' }}>
                                <div className="bg-gray-100 p-4 rounded text-right">
-                                   <div className="font-bold text-sm">TOTAL TAGIHAN</div>
-                                   <div className="font-bold text-lg mt-1">Rp {invoiceData.amount.toLocaleString('id-ID')}</div>
+                                   <div className="font-bold text-sm">TOTAL TAGIHAN: Rp {invoiceData.amount.toLocaleString('id-ID')}</div>
                                </div>
                             </div>
                         </div>
@@ -454,27 +453,27 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                     {/* Payment & Signature */}
                     <div className="flex justify-between mt-auto pt-6 border-t border-gray-200">
                         <div className="flex-1">
-                             <table className="text-xs">
+                             <table className="text-xs leading tight">
                                 <tbody>
                                     <tr>
-                                        <td className="font-semibold pr-4 py-1 align-top" style={{ width: '80px' }}>Pembayaran</td>
-                                        <td className="px-2 py-1 align-top">:</td>
-                                        <td className="py-1 align-top">Transfer Bank</td>
+                                        <td className="font-semibold pr-4 py-0.5 align-top" style={{ width: '80px' }}>Pembayaran</td>
+                                        <td className="px-2 py-0.5 align-top">:</td>
+                                        <td className="py-0.5 align-top">Transfer Bank</td>
                                     </tr>
                                     <tr>
-                                        <td className="font-semibold pr-4 py-1 align-top">Nama</td>
-                                        <td className="px-2 py-1 align-top">:</td>
-                                        <td className="py-1 align-top">KDMP Penfui Timur</td>
+                                        <td className="font-semibold pr-4 py-0.5 align-top">Nama</td>
+                                        <td className="px-2 py-0.5 align-top">:</td>
+                                        <td className="py-0.5 align-top">KDMP Penfui Timur</td>
                                     </tr>
                                     <tr>
-                                        <td className="font-semibold pr-4 py-1 align-top">Bank</td>
-                                        <td className="px-2 py-1 align-top">:</td>
-                                        <td className="py-1 align-top">Bank NTT</td>
+                                        <td className="font-semibold pr-4 py-0.5 align-top">Bank</td>
+                                        <td className="px-2 py-0.5 align-top">:</td>
+                                        <td className="py-0.5 align-top">Bank NTT</td>
                                     </tr>
                                     <tr>
-                                        <td className="font-semibold pr-4 py-1 align-top">No Rekening</td>
-                                        <td className="px-2 py-1 align-top">:</td>
-                                        <td className="py-1 align-top">001.02.02.123456-7</td>
+                                        <td className="font-semibold pr-4 py-0.5 align-top">No. Rek</td>
+                                        <td className="px-2 py-0.5 align-top">:</td>
+                                        <td className="py-0.5 align-top">001.02.02.123456-7</td>
                                     </tr>
                                 </tbody>
                             </table>
