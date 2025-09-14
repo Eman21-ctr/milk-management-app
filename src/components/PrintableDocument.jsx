@@ -312,26 +312,31 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
                   }}
               >
                 {/* Header */}
-                <div className="pb-4 mb-6 border-b-2 border-black doc-header no-break">
-                    <div className="flex items-start">
-                      <img 
-                        src="https://res.cloudinary.com/dnci7vkv4/image/upload/v1756788264/logo-kdmp_e0gttt.png" 
-                        alt="KDMP Logo" 
-                        className="h-16 mr-4 flex-shrink-0" 
-                        style={{ maxWidth: '64px', height: 'auto' }}
-                      />
-                      <div className="leading-tight">
-                          <h1 className="text-base font-bold mb-0.5">KDMP PENFUI TIMUR</h1>
-                          <p className="text-[10px] mb-0.5">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
-                          <p className="text-[10px] mb-0.5">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
-                          <p className="text-[10px]">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
-                      </div>
-                    </div>
-                    <div className="text-center mt-4">
-                          <h2 className="text-xl font-bold uppercase underline">{title}</h2>
-                          <p className="text-sm text-gray-600 mt-1">Nomor: {docNumber}</p>
-                    </div>
-                </div>
+<div className="pb-2 doc-header no-break">
+    <div className="flex items-start">
+      <img 
+        src="https://res.cloudinary.com/dnci7vkv4/image/upload/v1756788264/logo-kdmp_e0gttt.png" 
+        alt="KDMP Logo" 
+        className="h-16 mr-4 flex-shrink-0" 
+        style={{ maxWidth: '64px', height: 'auto' }}
+      />
+      <div className="leading-tight">
+          <h1 className="text-base font-bold mb-0.5">KDMP PENFUI TIMUR</h1>
+          <p className="text-[10px] mb-0.5">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
+          <p className="text-[10px] mb-0.5">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
+          <p className="text-[10px]">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
+      </div>
+    </div>
+</div>
+
+{/* Garis pemisah */}
+<div className="border-b-2 border-black mb-6"></div>
+
+{/* Title */}
+<div className="text-center mb-6">
+    <h2 className="text-xl font-bold uppercase underline">{title}</h2>
+    <p className="text-sm text-gray-600 mt-1">Nomor: {docNumber}</p>
+</div>
 
                 {docType === 'sj' ? (
                   <section className="mb-6 text-sm no-break">
