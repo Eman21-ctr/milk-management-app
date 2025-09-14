@@ -482,7 +482,7 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                             <p className="mb-1">Hormat Kami</p>
                             <p className="mb-1">KDMP Penfui Timur</p>
                             <div style={{ height: '60px' }}></div> {/* Spacer untuk tanda tangan */}
-                            <p className="font-bold underline mb-1">Susi Maulani</p>
+                            <p className="font-bold underline mb-1">Susi Wahyuni, M.Si</p>
                             <p>Manajer Distribusi</p>
                         </div>
                     </div>

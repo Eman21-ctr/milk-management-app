@@ -416,7 +416,7 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
                         <tbody>
                             <tr>
                                 <td className="p-3 text-center border border-gray-300 align-top">1</td>
-                                <td className="p-3 border border-gray-300 align-top">Susu Milk Pro UHT</td>
+                                <td className="p-3 border border-gray-300 align-top">Susu Milk Pro</td>
                                 <td className="p-3 text-center border border-gray-300 align-top font-semibold">{distribution.cartons.toLocaleString('id-ID')}</td>
                                 <td className="p-3 border border-gray-300 align-top">Kartoon Box</td>
                             </tr>
