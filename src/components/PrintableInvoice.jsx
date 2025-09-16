@@ -372,7 +372,10 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                                 style={{ maxWidth: '64px', height: 'auto' }}
                             />
                             <div className="leading-tight">
-                                <h1 className="text-base font-bold mb-0.5">KDMP PENFUI TIMUR</h1>
+                                <h1 className="text-base font-bold mb-0.5 leading-none">
+        KOPERASI DESA MERAH PUTIH<br />
+        PENFUI TIMUR
+    </h1>
                                 <p className="text-[10px] mb-0.5">Jln Matani Raya, Ds. Penfui Timur, Kupang, NTT</p>
                                 <p className="text-[10px] mb-0.5">Badan Hukum No: AHU 002709.AH..01.29.TAHUN 2025</p>
                                 <p className="text-[10px]">Telp: 0853-3917-0645 | Email: kopdesmerahputihpenfuitimur@gmail.com</p>
