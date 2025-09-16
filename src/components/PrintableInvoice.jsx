@@ -1,8 +1,5 @@
 import { useState } from 'react';
-
-// Constants - sesuaikan dengan nilai aktual aplikasi Anda
-const SELLING_PRICE_PER_CARTON = 75000;
-const BOTTLES_PER_CARTON = 24;
+import { SELLING_PRICE_PER_CARTON, BOTTLES_PER_CARTON } from '../constants.js';
 
 // Icon Components - didefinisikan langsung di file
 const DownloadIcon = ({ className }) => (
