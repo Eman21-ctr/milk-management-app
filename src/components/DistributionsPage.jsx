@@ -46,7 +46,7 @@ const DistributionsPage = ({ distributions, sppgs, coordinators, updateDistribut
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-text-secondary">Jumlah:</span>
-            <span className="font-medium text-text-primary">{dist.cartons.toLocaleString('id-ID')} Kartoon Box</span>
+            <span className="font-medium text-text-primary">{dist.cartons.toLocaleString('id-ID')} Dus</span>
           </div>
         </div>
          <div className="pt-2 border-t flex items-center justify-end space-x-2">
