@@ -468,12 +468,12 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                                     <tr>
                                         <td className="font-semibold pr-4 py-0.5 align-top">Bank</td>
                                         <td className="px-2 py-0.5 align-top">:</td>
-                                        <td className="py-0.5 align-top">Bank NTT</td>
+                                        <td className="py-0.5 align-top">Bank BRI</td>
                                     </tr>
                                     <tr>
                                         <td className="font-semibold pr-4 py-0.5 align-top">No. Rek</td>
                                         <td className="px-2 py-0.5 align-top">:</td>
-                                        <td className="py-0.5 align-top">001.02.02.123456-7</td>
+                                        <td className="py-0.5 align-top">1696-01-0000061-30-9</td>
                                     </tr>
                                 </tbody>
                             </table>
