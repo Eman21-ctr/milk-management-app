@@ -463,7 +463,7 @@ const PrintableInvoice = ({ isOpen, onClose, invoice, distribution, sppg }) => {
                                     <tr>
                                         <td className="font-semibold pr-4 py-0.5 align-top">Nama</td>
                                         <td className="px-2 py-0.5 align-top">:</td>
-                                        <td className="py-0.5 align-top">KDMP Penfui Timur</td>
+                                        <td className="py-0.5 align-top">Koperasi Desa Merah Putih Penfui Timur</td>
                                     </tr>
                                     <tr>
                                         <td className="font-semibold pr-4 py-0.5 align-top">Bank</td>
