@@ -391,15 +391,20 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
                           <table className="text-sm mb-2" style={{ borderCollapse: 'collapse', border: 'none' }}>
                               <tbody>
                                   <tr>
-                                      <td style={{ border: 'none', padding: '1px 0', width: '80px' }}>Nama</td>
-                                      <td style={{ border: 'none', padding: '1px 8px', width: '10px' }}>:</td>
-                                      <td style={{ border: 'none', padding: '1px 0' }} className="font-semibold">..............................</td>
-                                  </tr>
-                                  <tr>
-                                      <td style={{ border: 'none', padding: '1px 0' }}>Jabatan</td>
-                                      <td style={{ border: 'none', padding: '1px 8px' }}>:</td>
-                                      <td style={{ border: 'none', padding: '1px 0' }} className="font-semibold">..............................</td>
-                                  </tr>
+    <td style={{ border: 'none', padding: '1px 0', width: '80px' }}>Nama</td>
+    <td style={{ border: 'none', padding: '1px 8px', width: '10px' }}>:</td>
+    <td style={{ border: 'none', padding: '1px 0' }} className="font-semibold">..............................</td>
+</tr>
+<tr>
+    <td style={{ border: 'none', padding: '1px 0' }}>SPPG</td>
+    <td style={{ border: 'none', padding: '1px 8px' }}>:</td>
+    <td style={{ border: 'none', padding: '1px 0' }} className="font-semibold">{sppg?.name || '..............................'}</td>
+</tr>
+<tr>
+    <td style={{ border: 'none', padding: '1px 0' }}>Jabatan</td>
+    <td style={{ border: 'none', padding: '1px 8px' }}>:</td>
+    <td style={{ border: 'none', padding: '1px 0' }} className="font-semibold">..............................</td>
+</tr>
                               </tbody>
                           </table>
                           <p className="mt-2">Selanjutnya disebut sebagai <span className="font-bold">PIHAK KEDUA</span>.</p>
@@ -414,34 +419,38 @@ const PrintableDocument = ({ isOpen, onClose, docType, distribution, sppg, coord
                     <h3 className="font-bold mb-4 text-sm">Rincian Barang:</h3>
                     <table className="w-full" style={{ borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr className="bg-gray-100">
-                                <th className="p-3 font-bold text-xs text-center border border-gray-300" style={{ width: '10%' }}>No.</th>
-                                <th className="p-3 font-bold text-xs text-left border border-gray-300" style={{ width: '50%' }}>Nama Barang</th>
-                                <th className="p-3 font-bold text-xs text-center border border-gray-300" style={{ width: '20%' }}>Jumlah</th>
-                                <th className="p-3 font-bold text-xs text-left border border-gray-300" style={{ width: '20%' }}>Satuan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className="p-3 text-center border border-gray-300 align-top">1</td>
-                                <td className="p-3 border border-gray-300 align-top">Susu Milk Pro</td>
-                                <td className="p-3 text-center border border-gray-300 align-top font-semibold">{distribution.cartons.toLocaleString('id-ID')}</td>
-                                <td className="p-3 border border-gray-300 align-top">Kartoon Box</td>
-                            </tr>
-                        </tbody>
+    <tr className="bg-gray-100">
+        <th className="p-3 font-bold text-xs text-center border border-gray-300" style={{ width: '8%' }} rowSpan="2">No.</th>
+        <th className="p-3 font-bold text-xs text-left border border-gray-300" style={{ width: '40%' }} rowSpan="2">Nama Barang</th>
+        <th className="p-3 font-bold text-xs text-center border border-gray-300" style={{ width: '15%' }} rowSpan="2">Jumlah</th>
+        <th className="p-3 font-bold text-xs text-left border border-gray-300" style={{ width: '12%' }} rowSpan="2">Satuan</th>
+        <th className="p-3 font-bold text-xs text-center border border-gray-300" style={{ width: '25%' }} colSpan="2">Kondisi Barang</th>
+    </tr>
+    <tr className="bg-gray-100">
+        <th className="p-3 font-bold text-xs text-center border border-gray-300">Baik</th>
+        <th className="p-3 font-bold text-xs text-center border border-gray-300">Rusak</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td className="p-3 text-center border border-gray-300 align-top">1</td>
+        <td className="p-3 border border-gray-300 align-top">Susu Milk Pro</td>
+        <td className="p-3 text-center border border-gray-300 align-top font-semibold">{distribution.cartons.toLocaleString('id-ID')}</td>
+        <td className="p-3 border border-gray-300 align-top">Dus</td>
+        <td className="p-3 text-center border border-gray-300 align-top">&nbsp;</td>
+        <td className="p-3 text-center border border-gray-300 align-top">&nbsp;</td>
+    </tr>
+</tbody>
                     </table>
                 </div>
 
                 <section className="mb-8 text-sm no-break">
-                    {docType === 'sj' ? (
-                        <p>Mohon barang diterima dan diperiksa dengan baik. Terima kasih.</p>
-                    ) : (
-                        <>
-                          <p className="mb-4">Barang diterima dalam kondisi baik dan sesuai dengan rincian di atas.</p>
-                          <p>Demikian Berita Acara Serah Terima ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
-                        </>
-                    )}
-                </section>
+    {docType === 'sj' ? (
+        <p>Mohon barang diterima dan diperiksa dengan baik. Terima kasih.</p>
+    ) : (
+        <p>Demikian Berita Acara Serah Terima ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
+    )}
+</section>
 
                 {/* Signature */}
                 <div className="mt-auto pt-6 border-t border-gray-200">
